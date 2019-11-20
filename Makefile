@@ -33,7 +33,7 @@ versions:
 .PHONY: version versions
 
 image:
-	docker build -t $(image) --build-arg image_ver=$(image_ver) Virtlyst/
+	docker build -t $(image) --build-arg image_ver=$(image_ver) -f Virtlyst/Dockerfile .
 
 publish: image
 	docker tag $(image) $(registry)/$(image)

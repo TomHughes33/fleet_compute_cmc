@@ -4,7 +4,7 @@ FROM debian:stretch as builder
 ARG CUTELYST_VERSION=v2.7.0
 ARG VIRTLYST_VERSION=v1.1.0
 
-COPY ./virt.tar.gz /usr/local/src/
+COPY Virtlyst/ /usr/local/src/Virtlyst/
 
 RUN apt-get update \
     # Install build dependencies
@@ -19,11 +19,7 @@ RUN apt-get update \
     && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DPLUGIN_VIEW_GRANTLEE=on \
     && make && make install \ 
     # Build virtlyst
-    && cd /usr/local/src \
-    && tar -xzvf virt.tar.gz \
-    #&& git clone https://github.com/cutelyst/Virtlyst.git \
-    && cd Virtlyst \
-    #&& git checkout tags/$VIRTLYST_VERSION \
+    && cd /usr/local/src/Virtlyst \
     && cmake . \
     && make
 
@@ -44,5 +40,6 @@ RUN apt-get update \
     && sed -i -e 's/virtlyst\.sqlite/\/data\/virtlyst\.sqlite/g' config.ini \
     && sed -i -e 's/TemplatePath = \./TemplatePath = root\/src/g' config.ini
 
+EXPOSE 3000
 VOLUME /data
 CMD ["/usr/local/bin/cutelyst-wsgi2","--ini","config.ini"]
