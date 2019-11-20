@@ -7,8 +7,7 @@ ver_major  := $(shell git describe | sed -e 's/\([0-9]\+\).*/\1/')
 ver_minor  := $(shell git describe | sed -e 's/[0-9]\+\.\([0-9]\+\).*/\1/')
 ver_patch  := $(shell git describe | sed -e 's/[0-9]\+\.[0-9]\+\.\([0-9]\+\).*/\1/')
 ver_commit := $(shell git describe | sed -e '/.*-.*/! d ; /.*-.*/ s/.*-\([0-9]\+\).*/-\1/' )
-#image_ver  ?= $(ver_major).$(ver_minor).$(ver_patch)$(ver_commit)
-image_ver  := '1.0'
+image_ver  ?= $(ver_major).$(ver_minor).$(ver_patch)$(ver_commit)
 image      := $(image_name):$(image_ver)
 PROXY      ?=
 
