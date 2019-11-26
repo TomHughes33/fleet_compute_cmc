@@ -20,8 +20,10 @@
 #include <QObject>
 
 #include <Cutelyst/Controller>
+#include <pqxx/pqxx>
 
 using namespace Cutelyst;
+using namespace pqxx;
 
 class Virtlyst;
 class Server : public Cutelyst::Controller

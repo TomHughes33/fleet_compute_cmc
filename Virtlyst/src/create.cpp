@@ -66,7 +66,7 @@ void Create::index(Context *c, const QString &hostId)
             const int memory = params[QStringLiteral("memory")].toInt();
             const int vcpu = params[QStringLiteral("vcpu")].toInt();
             const int disk = params[QStringLiteral("disk")].toInt();
-            QSqlQuery query = CPreparedSqlQueryThreadForDB(
+            /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                         QStringLiteral("INSERT INTO create_flavor "
                                        "(label, memory, vcpu, disk) "
                                        "VALUES "
@@ -74,16 +74,29 @@ void Create::index(Context *c, const QString &hostId)
                         QStringLiteral("virtlyst"));
             if (!Virtlyst::createDbFlavor(query, label, memory, vcpu, disk)) {
                 qWarning() << "Failed to create flavor" << label << query.lastError().databaseText();
-            }
+            }*/
+	    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+	    qDebug() << "In Create::index inserting create_flavor into Database " << psqlDB->dbname();
+	    work txn(*psqlDB);
+	    psqlDB->prepare("inscfquery", "INSERT INTO create_flavor (label, memory, vcpu, disk)" \
+					"VALUES ($1, $2, $3, $4)");
+	    result res = txn.prepared("inscfquery")(label.toLatin1().constData())(memory)(vcpu)(disk).exec();
+	    txn.commit();
         } else if (params.contains(QStringLiteral("delete_flavor"))) {
             const QString id = params[QStringLiteral("flavor")];
-            QSqlQuery query = CPreparedSqlQueryThreadForDB(
+            /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                         QStringLiteral("DELETE FROM create_flavor WHERE id = :id"),
                         QStringLiteral("virtlyst"));
             query.bindValue(QStringLiteral(":id"), id);
             if (!query.exec()) {
                 qWarning() << "Failed to delete flavor" << id << query.lastError().databaseText();
-            }
+            }*/
+	    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+	    qDebug() << "In Create::indes deleting create_flavor in Database " << psqlDB->dbname();
+	    work txn(*psqlDB);
+	    psqlDB->prepare("delcfquery", "DELETE FROM create_flavor WHERE id = $1"); 
+	    result res = txn.prepared("delcfquery")(id.toLatin1().constData()).exec();
+	    txn.commit();
         } else if (params.contains(QStringLiteral("create_xml"))) {
             const QString xml = params[QStringLiteral("from_xml")];
             QDomDocument xmlDoc;
@@ -197,10 +210,18 @@ void Create::index(Context *c, const QString &hostId)
     c->setStash(QStringLiteral("cache_modes"), QVariant::fromValue(conn->getCacheModes()));
     c->setStash(QStringLiteral("mac_auto"), "aa:aa:aa:aa:aa:aa");
 
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+/*    QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("SELECT * FROM create_flavor"),
                 QStringLiteral("virtlyst"));
     if (query.exec()) {
         c->setStash(QStringLiteral("flavors"), Sql::queryToHashList(query));
+    }*/
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Create::index Querying create_flavor in Database " << psqlDB->dbname();
+    const char *query = "SELECT * FROM create_flavor";
+    nontransaction notxn(*psqlDB);
+    result res(notxn.exec(query));
+    if(!res.empty()) {
+        c->setStash(QStringLiteral("flavors"), resultToHashList(res));
     }
 }

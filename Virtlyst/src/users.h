@@ -18,8 +18,10 @@
 #define USERS_H
 
 #include <Cutelyst/Controller>
+#include <pqxx/pqxx>
 
 using namespace Cutelyst;
+using namespace pqxx;
 
 class Users : public Controller
 {

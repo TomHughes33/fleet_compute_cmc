@@ -215,16 +215,23 @@ uint Connection::cpus()
 bool Connection::isOnline()
 {
 
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+    /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("SELECT isonline FROM servers_compute where name=:name"),
                 QStringLiteral("virtlyst"));
     query.bindValue(QStringLiteral(":name"), name());		
     if (!query.exec()) {
         qWarning() << "Failed to get online status" << query.lastError().databaseText();
     }
-    query.next();
+    query.next();*/
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Connection::isOnline Querying Database " << psqlDB->dbname();
+    //const char *query = "SELECT isonline FROM servers_compute where name=:name";
+    nontransaction notxn(*psqlDB);
+    psqlDB->prepare("selioquery", "SELECT isonline FROM servers_compute where name=$1");
+    result res = notxn.prepared("selioquery")(name().toLatin1().constData()).exec();
     // qDebug() << "query.value(0).toInt()" << name() << ":" << query.value(0).toInt() ;
-    if (query.value(0).toInt() == 1) 
+    //if (query.value(0).toInt() == 1) 
+    if (res[0][0].as<int>() == 1) 
        return true;
     else
        return false;
