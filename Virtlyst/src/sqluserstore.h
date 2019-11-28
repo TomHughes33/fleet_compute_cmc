@@ -19,6 +19,9 @@
 
 #include <QObject>
 #include <Cutelyst/Plugins/Authentication/authenticationstore.h>
+#include <pqxx/pqxx>
+
+using namespace pqxx;
 
 class SqlUserStore : public Cutelyst::AuthenticationStore
 {

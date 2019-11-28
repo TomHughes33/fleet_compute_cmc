@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "users.h"
+#include "virtlyst.h"
+#include <iostream>
 
 #include <QLoggingCategory>
 
@@ -34,15 +36,28 @@ Users::Users(QObject *parent)
 
 void Users::index(Context *c)
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+    /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("SELECT id, username "
                                "FROM users "
                                "ORDER BY username"),
-                QStringLiteral("virtlyst"));
-    if (query.exec()) {
-        c->setStash(QStringLiteral("users"), Sql::queryToList(query));
-    } else {
-        qDebug() << "error users" << query.lastError().text();
+                QStringLiteral("virtlyst"));*/
+    try {
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Users::index Querying users in Database " << psqlDB->dbname();
+    const char *query = "SELECT id, username FROM users ORDER BY username";
+    nontransaction notxn(*psqlDB);
+    result res(notxn.exec(query));
+
+    //if (query.exec()) {
+    if (!res.empty()) {
+//ToDo        c->setStash(QStringLiteral("users"), Sql::queryToList(query));
+        c->setStash(QStringLiteral("users"), resultToList(res));
+    } /*else {
+        qDebug() << "error users" << query.lastError().text();*/
+    }
+    catch(const std::exception &e)
+    {
+	std::cerr << e.what() << std::endl;
         c->response()->setStatus(Response::InternalServerError);
     }
 }
@@ -60,7 +75,7 @@ void Users::create(Context *c)
         }
         const QString pass = CredentialPassword::createPassword(password);
 
-        QSqlQuery query = CPreparedSqlQueryThreadForDB(
+        /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("INSERT INTO users "
                                    "(username, password) "
                                    "VALUES "
@@ -68,11 +83,23 @@ void Users::create(Context *c)
                     QStringLiteral("virtlyst"));
         query.bindValue(QStringLiteral(":username"), params.value(QStringLiteral("username")));
         query.bindValue(QStringLiteral(":password"), pass);
-        if (query.exec()) {
+        if (query.exec()) {*/
+	try {
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Users::create inserting users into Database " << psqlDB->dbname();
+    work txn(*psqlDB);
+    psqlDB->prepare("insusquery", "INSERT INTO users (username, password) VALUES ($1, $2)");
+    result res = txn.prepared("insusquery")((params.value(QStringLiteral("username"))).toLatin1().constData())(pass.toLatin1().constData()).exec();
+    txn.commit();
+
             c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
             return;
-        } else {
-            qDebug() << "error create user" << query.lastError().text();
+    /*    } else {
+            qDebug() << "error create user" << query.lastError().text();*/
+    }
+    catch(const std::exception &e)
+    {
+	std::cerr << e.what() << std::endl;
             c->response()->setStatus(Response::InternalServerError);
         }
     }
@@ -85,7 +112,7 @@ void Users::edit(Context *c, const QString &id)
 {
     if (c->request()->isPost()) {
         const ParamsMultiMap params = c->req()->bodyParameters();
-        QSqlQuery query = CPreparedSqlQueryThreadForDB(
+        /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("UPDATE users "
                                    "SET "
                                    "username=:username "
@@ -93,24 +120,48 @@ void Users::edit(Context *c, const QString &id)
                     QStringLiteral("virtlyst"));
         query.bindValue(QStringLiteral(":username"), params.value(QStringLiteral("username")));
         query.bindValue(QStringLiteral(":id"), id);
-        if (query.exec()) {
+        if (query.exec()) {*/
+	try {
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Users::edit updating users into Database " << psqlDB->dbname();
+    work txn(*psqlDB);
+    psqlDB->prepare("updedquery", "UPDATE users SET username = $1 WHERE id = $2"); 
+    result res = txn.prepared("updedquery")((params.value(QStringLiteral("username"))).toLatin1().constData())(id.toLatin1().constData()).exec();
+    txn.commit();
             c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
             return;
-        } else {
-            qDebug() << "error users" << query.lastError().text();
+       /* } else {
+            qDebug() << "error users" << query.lastError().text();*/
+    }
+    catch(const std::exception &e)
+    {
+	std::cerr << e.what() << std::endl;
             c->response()->setStatus(Response::InternalServerError);
         }
     } else {
-        QSqlQuery query = CPreparedSqlQueryThreadForDB(
+    /*    QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("SELECT username "
                                    "FROM users "
                                    "WHERE id=:id"),
                     QStringLiteral("virtlyst"));
         query.bindValue(QStringLiteral(":id"), id);
-        if (query.exec()) {
-            c->setStash(QStringLiteral("user"), Sql::queryToHashObject(query));
-        } else {
-            qDebug() << "error users" << query.lastError().text();
+        if (query.exec()) {*/
+	    try {
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Users::edit Querying users in Database " << psqlDB->dbname();
+    nontransaction notxn(*psqlDB);
+    psqlDB->prepare("seledquery","SELECT username FROM users WHERE id=$1");
+    result res = notxn.prepared("seledquery")(id.toLatin1().constData()).exec();
+
+    if(!res.empty()) {
+//ToDo            c->setStash(QStringLiteral("user"), Sql::queryToHashObject(query));
+            c->setStash(QStringLiteral("user"), resultToHashObject(res));
+        } /*else {
+            qDebug() << "error users" << query.lastError().text();*/
+    }
+    catch(const std::exception &e)
+    {
+	std::cerr << e.what() << std::endl;
             c->response()->setStatus(Response::InternalServerError);
         }
     }
@@ -129,32 +180,55 @@ void Users::change_password(Context *c, const QString &id)
         }
         const QString pass = CredentialPassword::createPassword(password);
 
-        QSqlQuery query = CPreparedSqlQueryThreadForDB(
+/*        QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("UPDATE users "
                                    "SET password=:password "
                                    "WHERE id=:id"),
                     QStringLiteral("virtlyst"));
         query.bindValue(QStringLiteral(":password"), pass);
         query.bindValue(QStringLiteral(":id"), id);
-        if (query.exec()) {
+        if (query.exec()) {*/
+	try {
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Users::change_password updating users into Database " << psqlDB->dbname();
+    work txn(*psqlDB);
+    psqlDB->prepare("updcpquery", "UPDATE users SET password = $1 WHERE id = $2"); 
+    result res = txn.prepared("updcpquery")((params.value(QStringLiteral("username"))).toLatin1().constData())(id.toLatin1().constData()).exec();
+    txn.commit();
             c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
             return;
-        } else {
-            qDebug() << "error users" << query.lastError().text();
+        } /*else {
+            qDebug() << "error users" << query.lastError().text();*/
+    catch(const std::exception &e)
+    {
+	std::cerr << e.what() << std::endl;
             c->response()->setStatus(Response::InternalServerError);
         }
     }
 
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+    /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("SELECT username "
                                "FROM users "
                                "WHERE id=:id"),
                 QStringLiteral("virtlyst"));
     query.bindValue(QStringLiteral(":id"), id);
-    if (query.exec()) {
-        c->setStash(QStringLiteral("user"), Sql::queryToHashObject(query));
-    } else {
-        qDebug() << "error users" << query.lastError().text();
+    if (query.exec()) {*/
+	    try {
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Users::change_password Querying users in Database " << psqlDB->dbname();
+    nontransaction notxn(*psqlDB);
+    psqlDB->prepare("selcpquery","SELECT username FROM users WHERE id=$1");
+    result res = notxn.prepared("selcpquery")(id.toLatin1().constData()).exec();
+
+    if(!res.empty()) {
+//ToDo        c->setStash(QStringLiteral("user"), Sql::queryToHashObject(query));
+        c->setStash(QStringLiteral("user"), resultToHashObject(res));
+    } /*else {
+        qDebug() << "error users" << query.lastError().text();*/
+    }
+    catch(const std::exception &e)
+    {
+	std::cerr << e.what() << std::endl;
         c->response()->setStatus(Response::InternalServerError);
     }
 }

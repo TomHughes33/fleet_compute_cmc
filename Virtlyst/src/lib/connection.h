@@ -21,6 +21,9 @@
 #include <QObject>
 #include <QDomDocument>
 #include <libvirt/libvirt.h>
+#include <pqxx/pqxx>
+
+using namespace pqxx;
 
 class Domain;
 class Interface;

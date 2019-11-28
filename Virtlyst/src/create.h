@@ -18,8 +18,10 @@
 #define CREATE_H
 
 #include <Cutelyst/Controller>
+#include <pqxx/pqxx>
 
 using namespace Cutelyst;
+using namespace pqxx;
 
 class Virtlyst;
 class Create : public Controller

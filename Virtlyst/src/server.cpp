@@ -86,7 +86,7 @@ void Server::index(Context *c)
 
 void Server::createServer(int type, const QString &name, const QString &hostname, const QString &login, const QString &password)
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+/*    QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("INSERT INTO servers_compute "
                                "(type, name, hostname, login, password) "
                                "VALUES "
@@ -99,12 +99,20 @@ void Server::createServer(int type, const QString &name, const QString &hostname
     query.bindValue(QStringLiteral(":password"), password);
     if (!query.exec()) {
         qWarning() << "Failed to add connection" << query.lastError().databaseText();
-    }
+    }*/
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Server::createServer inserting into Database " << psqlDB->dbname();
+    work txn(*psqlDB);
+    psqlDB->prepare("insscquery", "INSERT INTO servers_compute (type, name, hostname, login, password)" \
+		    		"VALUES ($1, $2, $3, $4, $5)");
+    result res = txn.prepared("insscquery")(type)(name.toLatin1().constData())(hostname.toLatin1().constData())(login.toLatin1().constData())(password.toLatin1().constData()).exec();
+    txn.commit();
+    
 }
 
 void Server::updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password)
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+    /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("UPDATE servers_compute "
                                "SET "
                                "name = :name, "
@@ -120,16 +128,29 @@ void Server::updateServer(int id, const QString &name, const QString &hostname, 
     query.bindValue(QStringLiteral(":password"), password);
     if (!query.exec()) {
         qWarning() << "Failed to update connection" << query.lastError().databaseText();
-    }
+    }*/
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Server::updateServer updating into Database " << psqlDB->dbname();
+    work txn(*psqlDB);
+    psqlDB->prepare("updscquery", "UPDATE servers_compute SET name = $1, hostname = $2, login = $3, password = $4 WHERE id = $5"); 
+    result res = txn.prepared("updscquery")(name.toLatin1().constData())(hostname.toLatin1().constData())(login.toLatin1().constData())(password.toLatin1().constData())(id).exec();
+    txn.commit();
+
 }
 
 void Server::deleteServer(int id)
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+    /*QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("DELETE FROM servers_compute WHERE id = :id"),
                 QStringLiteral("virtlyst"));
     query.bindValue(QStringLiteral(":id"), id);
     if (!query.exec()) {
         qWarning() << "Failed to delete connection" << query.lastError().databaseText();
-    }
+    }*/
+    pqxx::connection *psqlDB = Virtlyst::get_psqlDB();
+    qDebug() << "In Server::deleteServer deleting into Database " << psqlDB->dbname();
+    work txn(*psqlDB);
+    psqlDB->prepare("delscquery", "DELETE FROM servers_compute WHERE id = $1"); 
+    result res = txn.prepared("delscquery")(id).exec();
+    txn.commit();
 }

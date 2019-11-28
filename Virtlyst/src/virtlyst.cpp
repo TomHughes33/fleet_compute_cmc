@@ -57,8 +57,11 @@
 #include "sqluserstore.h"
 
 using namespace Cutelyst;
+using namespace std;
+using namespace pqxx;
 
 static QMutex mutex;
+pqxx::connection * Virtlyst::m_psqlDB = 0;
 
 Q_LOGGING_CATEGORY(VIRTLYST, "virtlyst")
 
@@ -72,6 +75,7 @@ Virtlyst::Virtlyst(QObject *parent) : Application(parent)
 Virtlyst::~Virtlyst()
 {
     qDeleteAll(m_connections);
+    delete m_psqlDB;
 }
 
 bool Virtlyst::init()
@@ -94,8 +98,8 @@ bool Virtlyst::init()
     bool production = config(QStringLiteral("production")).toBool();
     qCDebug(VIRTLYST) << "Production" << production;
 
-    m_dbPath = config(QStringLiteral("DatabasePath"),
-                      QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QLatin1String("/virtlyst.sqlite")).toString();
+    /*m_dbPath = config(QStringLiteral("DatabasePath"),
+                      QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QLatin1String("/virtlyst_psql.sqlite")).toString();
     qCDebug(VIRTLYST) << "Database" << m_dbPath;
     if (!QFile::exists(m_dbPath)) {
        qDebug() << "Failed to open database" << m_dbPath;
@@ -104,7 +108,7 @@ bool Virtlyst::init()
     //        return false;
     //    }
     //    QSqlDatabase::removeDatabase(QStringLiteral("db"));
-    }
+    }*/
 
     auto templatePath = config(QStringLiteral("TemplatePath"), pathTo(QStringLiteral("root/src"))).toString();
     auto view = new GrantleeView(this);
@@ -135,10 +139,18 @@ bool Virtlyst::postFork()
 {
     QMutexLocker locker(&mutex);
 
-    auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Cutelyst::Sql::databaseNameThread(QStringLiteral("virtlyst")));
+    /*auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Cutelyst::Sql::databaseNameThread(QStringLiteral("virtlyst")));
     db.setDatabaseName(m_dbPath);
     if (!db.open()) {
         qCWarning(VIRTLYST) << "Failed to open database" << db.lastError().databaseText();
+        return false;
+    }*/
+
+    //string sql = "dbname = susant user = susant password = susant hostaddr = 172.16.141.142 port = 5432";
+    //m_psqlDB ("dbname = susant user = susant password = susant hostaddr = 172.16.141.142 port = 5432");
+    m_psqlDB  = new pqxx::connection("dbname = fleetcompute user = fleetcompute password = fleetcompute hostaddr = 172.16.141.142 port = 5432");
+    if (!m_psqlDB->is_open()) {
+        qCWarning(VIRTLYST) << "Failed to open PSQL database" << m_psqlDB->dbname();
         return false;
     }
 
@@ -147,7 +159,8 @@ bool Virtlyst::postFork()
 
 //    m_connections.insert(QStringLiteral("1"), server);
 
-    qCDebug(VIRTLYST) << "Database ready" << db.connectionName();
+    //qCDebug(VIRTLYST) << "Database ready" << db.connectionName();
+    qCDebug(VIRTLYST) << "Database ready" << m_psqlDB->dbname();
 
     updateConnections();
 
@@ -235,23 +248,36 @@ bool Virtlyst::createDbFlavor(QSqlQuery &query, const QString &label, int memory
 
 void Virtlyst::updateConnections()
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+   /* QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("SELECT id, name, hostname, login, password, type FROM servers_compute"),
                 QStringLiteral("virtlyst"));
     if (!query.exec()) {
         qCWarning(VIRTLYST) << "Failed to get connections list";
-    }
+    }*/
+    qCDebug(VIRTLYST) << "In Virtlyst::updateConnections Querying servers_compute in Database " << m_psqlDB->dbname();
+    const char *query = "SELECT id, name, hostname, login, password, type FROM servers_compute";
+    nontransaction notxn(*m_psqlDB);
+    result res(notxn.exec(query));
+    notxn.commit();
 
     QStringList ids;
-    while (query.next()) {
+   /* while (query.next()) {
         const QString id = query.value(0).toString();
         const QString name = query.value(1).toString();
         const QString hostname = query.value(2).toString();
         const QString login = query.value(3).toString();
         const QString password = query.value(4).toString();
-        int type = query.value(5).toInt();
+        int type = query.value(5).toInt();*/
+    for (result::const_iterator r = res.begin(); r != res.end(); ++r) {
+        const QString id = QString::fromStdString(r[0].as<string>());
+        const QString name = QString::fromStdString(r[1].as<string>());
+        const QString hostname = QString::fromStdString(r[2].as<string>());
+        const QString login = (!r[3].is_null())?QString::fromStdString(r[3].as<string>()):"";
+        const QString password = (!r[4].is_null())?QString::fromStdString(r[4].as<string>()):"";
+        int type = r[5].as<int>();
         ids << id;
 
+//    qCDebug(VIRTLYST) << "Database records" << r[0].as<string>() << " " << r[1].as<string>() << " " << r[2].as<string>() << " " << r[5].as<int>();
         ServerConn *server = m_connections.value(id);
         if (server) {
             if (server->name == name &&
@@ -273,13 +299,18 @@ void Virtlyst::updateConnections()
         server->login = login;
         server->password = password;
         server->type = type;
+	qDebug() << "name:" << name;
+        qDebug() << "hostname:" << hostname;
+        qDebug() << "type:" << type;
         QUrl url;
         switch (type) {
         case ServerConn::ConnSocket:
             url = QStringLiteral("qemu:///system");
             break;
         case ServerConn::ConnSSH:
-            url = QStringLiteral("qemu+ssh:///system");
+            //url = QStringLiteral("qemu+ssh:///system");
+            url = QStringLiteral("qemu+ssh:///system?keyfile=/etc/ssh/id_rsa_fc_edge");
+            //url = QStringLiteral("qemu+ssh:///system?keyfile=/root/.ssh/id_rsa_fc_edge");
             url.setHost(hostname);
             url.setUserName(login);
             break;
@@ -440,5 +471,82 @@ ServerConn *ServerConn::clone(QObject *parent)
     }
     ret->conn = conn->clone(ret);
 
+    return ret;
+}
+
+QVariantHash resultToHashObject(result &res)
+{
+    QVariantHash ret;
+    /*if (query.next()) {
+        const QSqlRecord record = query.record();
+        const int columns = record.count();
+        for (int i = 0; i < columns; ++i) {
+            ret.insert(record.fieldName(i), query.value(i));
+        }
+    }*/
+    if (!res.empty()) {
+	const result::tuple record = res[0];
+	const int columns = record.size();	
+        for (int col = 0; col < columns; ++col) {
+	    ret.insert(record[col].name(), (record[col]).c_str());
+	}
+    }
+    return ret;
+}
+
+QVariantList resultToHashList(result &res)
+{
+    QVariantList ret;
+/*    const QSqlRecord record = query.record();
+    const int columns = record.count();
+    QStringList cols;
+    for (int i = 0; i < columns; ++i) {
+        cols.append(record.fieldName(i));
+    }
+
+    while (query.next()) {
+        QVariantHash line;
+        for (int i = 0; i < columns; ++i) {
+            line.insert(cols.at(i), query.value(i));
+        }
+        ret.append(line);
+    }*/
+    const result::tuple record = res[0];
+    const int columns = record.size();
+    QStringList cols;
+    for (int i = 0; i < columns; ++i) {
+        cols.append(record[i].name());
+    }
+
+    for( int row = 0; row < res.size(); ++row ) {
+        QVariantHash line;
+        for (int i = 0; i < columns; ++i) {
+            line.insert(cols.at(i), (res[row][i]).c_str());
+        }
+        ret.append(line);
+    }
+    return ret;
+}
+
+QVariantList resultToList(result &res)
+{
+    QVariantList ret;
+
+ /*   const int columns = query.record().count();
+    while (query.next()) {
+        QVariantList line;
+        for (int i = 0; i < columns; ++i) {
+            line.append(query.value(i));
+        }
+        ret.append(QVariant::fromValue(line));
+    }*/
+    const int columns = res[0].size();
+    for( int row = 0; row < res.size(); ++row ) {
+        QVariantList line;
+        for (int col = 0; col < columns; ++col) {
+            line.append((res[row][col]).c_str());
+        }
+        ret.append(QVariant::fromValue(line));
+    }
     return ret;
 }

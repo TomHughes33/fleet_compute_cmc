@@ -22,8 +22,10 @@
 #include <QHash>
 #include <QSharedPointer>
 #include <QUrl>
+#include <pqxx/pqxx>
 
 using namespace Cutelyst;
+using namespace pqxx;
 
 class Connection;
 class ServerConn : public QObject
@@ -86,12 +88,19 @@ public:
 
     void updateConnections();
 
+    static pqxx::connection * get_psqlDB() { return m_psqlDB; }
+
 private:
     bool createDB();
 
     QMap<QString, ServerConn *> m_connections;
     QString m_dbPath;
+    static pqxx::connection *m_psqlDB;
 };
+
+QVariantHash resultToHashObject(result &res);
+QVariantList resultToHashList(result &res);
+QVariantList resultToList(result &res);
 
 #endif //VIRTLYST_H
 
