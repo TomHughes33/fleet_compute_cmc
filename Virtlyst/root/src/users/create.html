@@ -2,7 +2,7 @@
 {% block title %}{% i18n "Create User" %}{% endblock %}
 
 {% block content %}
-<form method="post">
+<form method="post" id="form_id">
   <div class="form-group">
     <label for="username">Username</label>
     <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required autocomplete="username">
@@ -13,6 +13,6 @@
     <input type="password" class="form-control" id="password" name="password" required>
   </div>
   {% endif %}
-  <button type="submit" class="btn btn-primary">{% if user_edit %}Edit{% else %}Create{% endif %}</button>
+  <button type="submit" class="btn btn-primary" onclick="checkPassword()">{% if user_edit %}Edit{% else %}Create{% endif %}</button>
 </form>
 {% endblock %}
