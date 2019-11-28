@@ -1,0 +1,6 @@
+---
+repo: "172.16.141.201:5000"
+version: "latest"
+sqlite3_version: 3.25.3-r2
+...
+

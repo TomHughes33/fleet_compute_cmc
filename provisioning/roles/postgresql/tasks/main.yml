@@ -1,0 +1,23 @@
+- name: Copying the postgres DB contents
+  become: true
+  copy:
+     src: "{{ item.src }}"
+     dest: "{{ item.dest }}"
+  with_items:
+      - { src: '../files/create.sql',dest: '{{ destination }}'}
+  tags: install_db
+
+- name: postgresql DB installtion  
+  become: true
+  action: apt pkg= "{{ item }}" state=present
+  with_items:
+     - postgresql 
+     - postgresql-contrib
+
+- name: Creating the table and adding the entries
+  become: true
+  shell: |
+      PGPASSWORD=fleetcompute psql -U fleetcompute -d fleetcompute -a -f "{{ destination }}"/create.sql
+      #  ignore_errors: yes
+  tags: install_db
+

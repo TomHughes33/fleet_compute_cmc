@@ -1,0 +1,6 @@
+---
+destination: /home/pandora
+version: 2.1
+postgresql_version: 10+190ubuntu0.1
+...
+

@@ -1,0 +1,6 @@
+all:
+  hosts:
+    beid:
+      ansible_host: 172.16.141.142
+    atlas:
+      ansible_host: 172.16.141.144

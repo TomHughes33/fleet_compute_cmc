@@ -1,0 +1,44 @@
+- name: Pulling the Virtlyst Docker Image
+  become: true
+  shell: "docker pull {{ repo }}/inmarsat/fc/virtlyst:{{ version }}"
+  register: pull_result
+  ignore_errors: yes
+  tags: virt_deployment
+
+- debug:
+    msg: "{{ pull_result.stdout }}"
+  tags: virt_deployment
+
+- name: Checking for existing Virtlyst container
+  become: true
+  shell: "docker ps -a| grep virtlyst "
+  register: container
+  ignore_errors: yes
+  tags: virt_deployment
+
+- debug:
+    msg: "{{ container.stdout }}"
+  tags: virt_deployment
+
+- name: Removing the existing Virtlyst Container
+  become: true
+  shell: "docker rm -f $(docker ps -aqf 'name=virtlyst')"
+  when: container.stdout | join('') is search('virtlyst')
+  ignore_errors: yes 
+  tags: virt_deployment
+
+- name: Starting Virtlyst Container
+  become: true  
+  shell: "docker run --init -d --name virtlyst --rm -p 3000:3000 -v /run/libvirt:/run/libvirt:rw -v /data:/data {{ repo }}/inmarsat/fc/virtlyst:{{version}}"
+  tags: virt_deployment
+
+- name: Checking Virtlyst Container Health
+  become: true  
+  shell: "docker ps | grep virtlyst "
+  register: virt_container_health
+  tags: virt_deployment
+
+- debug:
+    msg: "{{ virt_container_health.stdout }}"
+  tags: virt_deployment
+
