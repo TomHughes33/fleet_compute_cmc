@@ -2,7 +2,7 @@
 {% block title %}{% i18n "Create User" %}{% endblock %}
 
 {% block content %}
-<form method="post">
+<form method="post" onsubmit="return checkPassword(this)">
   <div class="form-group">
     <label for="username">Username</label>
     <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required autocomplete="username">

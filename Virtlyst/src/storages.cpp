@@ -149,7 +149,9 @@ void Storages::storage(Context *c, const QString &hostId, const QString &pool)
 	    // StorageVol *vol = storage->getVolume("iso");
 
             for (Upload *upload : uploads) {
-             upload->save("/var/lib/libvirt/iso-images/" + upload->filename());
+	     upload->save("/var/lib/libvirt/images/" + upload->filename());
+             //upload->save("/var/lib/docker/volumes/hosting-images/_data/" + upload->filename());
+	      //vol->upload()
            }
         } else if (params.contains(QStringLiteral("cln_volume"))) {
             QString imageName = params[QStringLiteral("name")] + QLatin1String(".img");
