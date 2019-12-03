@@ -312,25 +312,15 @@ void Virtlyst::updateConnections()
             break;
         case ServerConn::ConnSSH:
             //url = QStringLiteral("qemu+ssh:///system");
-            //url = QStringLiteral("qemu+ssh:///system?keyfile=/etc/ssh/id_rsa_fc_edge");
             url = QStringLiteral("qemu+ssh:///system?keyfile=/root/.ssh/id_rsa_hosting");
-            //url = QStringLiteral("qemu+ssh:///system?keyfile=/root/.ssh/id_rsa_fc_edge");
-	    //if(hostname.find(":") != string::npos){
             if (hostname.contains(':')){
 		    QRegExp separator(":");
                     QStringList list = hostname.split(separator);
-		    //Split
-		    //QString hostip = list.at(0);
-		    //int num = list.at(1).toInt();
-
-		    //bool ok;
-		    //int num = hostname.substr(found+1, string::npos).toInt(&ok);
 		    url.setHost(list.at(0));
 		    url.setPort(list.at(1).toInt());
             } else {
               url.setHost(hostname);
             }
-	    //}
             url.setUserName(login);
             break;
         case ServerConn::ConnTCP:
