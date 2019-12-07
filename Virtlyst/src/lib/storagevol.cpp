@@ -135,6 +135,43 @@ StorageVol *StorageVol::clone(const QString &name, const QString &format, int fl
     return nullptr;
 }
 
+void StorageVol::upload(Cutelyst::Upload* upload)
+{
+  qDebug() << "uploading: " << upload->filename();
+  qDebug() << "name: " << upload->name();
+  qDebug() << "size: " << upload->size();
+  qDebug() << "pos: " << upload->pos();
+  qDebug() << "content-type: " << upload->contentType();
+
+  m_conn = virStorageVolGetConnect(m_vol);
+  virStreamPtr stream = virStreamNew(m_conn, 0);
+  int status = virStorageVolUpload(m_vol, stream, 0, upload->size(), 0);
+  qDebug() << "virStorageVolUpload status: " << status;
+
+  char data[0x100000]; // 1MB buffer on the stack
+  while (!upload->atEnd()) {
+    int bytes = upload->read(data, sizeof(data));
+    qDebug() << upload->filename() << ": read " << bytes << " bytes";
+    int written = 0;
+    while (written < bytes) {
+      int count = virStreamSend(stream, data, bytes);
+      if (count < 0) {
+        qDebug() << "Failed to write bytes to stream";
+        virStreamAbort(stream);
+        goto done;
+      }
+      qDebug() << upload->filename() << ": wrote " << bytes << " bytes";
+      written += count;
+    }
+  }
+  qDebug() << "done";
+  if (virStreamFinish(stream) < 0) {
+    qDebug() << "Failed to finish writing virt stream";
+  }
+ done:
+  virStreamFree(stream);
+}
+
 StoragePool *StorageVol::pool()
 {
     return new StoragePool(poolPtr(), this);

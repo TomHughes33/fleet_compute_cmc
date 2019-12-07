@@ -65,7 +65,6 @@ public:
     uint cpus();
 
     bool isAlive();
-    bool isOnline();
     int maxVcpus() const;
 
     QString cpuArch();

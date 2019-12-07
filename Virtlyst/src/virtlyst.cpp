@@ -169,15 +169,17 @@ QVector<ServerConn *> Virtlyst::servers(QObject *parent)
 Connection *Virtlyst::connection(const QString &id, QObject *parent)
 {
     ServerConn *server = m_connections.value(id);
-    if (server && server->conn->isAlive()) {
+    if (server && server->conn && server->conn->isAlive()) {
         return server->conn->clone(parent);
     } else if (server) {
         if (server->conn) {
             delete server->conn;
         }
 
-        server->conn = new Connection(server->url, server->name, server);
-        if (server->conn->isAlive()) {
+        server->conn = server->isonline()
+          ? new Connection(server->url, server->name, server)
+          : nullptr;
+        if (server->conn && server->conn->isAlive()) {
             return server->conn->clone(parent);
         }
     }
@@ -273,6 +275,7 @@ void Virtlyst::updateConnections()
         server->login = login;
         server->password = password;
         server->type = type;
+
         QUrl url;
         switch (type) {
         case ServerConn::ConnSocket:
@@ -298,7 +301,19 @@ void Virtlyst::updateConnections()
         }
         server->url = url;
 
-        server->conn = new Connection(url, name, server);
+        switch (type) {
+        case ServerConn::ConnSocket:
+          server->conn = new Connection(url, name, server);
+          break;
+        case ServerConn::ConnSSH:
+        case ServerConn::ConnTCP:
+        case ServerConn::ConnTLS:
+          server->conn = server->isonline() ?
+            new Connection(url, name, server)
+            : nullptr;
+          break;
+        }
+
         m_connections.insert(id, server);
     }
 
@@ -408,10 +423,21 @@ bool Virtlyst::createDB()
 
 bool ServerConn::isonline()
 {
-    if (conn) {
-        return conn->isOnline();
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+        QStringLiteral("SELECT isonline FROM servers_compute where name=:name"),
+        QStringLiteral("virtlyst"));
+
+    query.bindValue(QStringLiteral(":name"), name);
+
+    if (!query.exec()) {
+        qWarning() << "Failed to get online status" << query.lastError().databaseText();
     }
-    return false;
+    query.next();
+    // qDebug() << "query.value(0).toInt()" << name << ":" << query.value(0).toInt() ;
+    if (query.value(0).toInt() == 1)
+        return true;
+    else
+        return false;
 }
 
 
@@ -434,11 +460,11 @@ ServerConn *ServerConn::clone(QObject *parent)
     ret->type = type;
     ret->url = url;
 
-    if (!conn->isAlive() || !conn->isOnline()) {
+    if (ret->isonline() && conn && !conn->isAlive()) {
         delete conn;
         conn = new Connection(url, name, this);
     }
-    ret->conn = conn->clone(ret);
+    ret->conn = conn ? conn->clone(ret) : nullptr;
 
     return ret;
 }

@@ -1,32 +1,13 @@
-FROM debian:stretch as builder
+FROM cmc_build_env as builder
 
 #ARG CUTELYST_VERSION=v2.4.1
 ARG CUTELYST_VERSION=v2.7.0
 ARG VIRTLYST_VERSION=v1.1.0
 
-COPY Virtlyst/ /usr/local/src/Virtlyst/
-
-RUN apt-get update \
-    # Install build dependencies
-    && apt-get install -y git cmake g++ qtbase5-dev libgrantlee5-dev pkg-config libvirt-dev \
-    && cd /usr/local/src \
-    # Build cutelyst
-    && git clone https://github.com/cutelyst/cutelyst.git \
-    && cd cutelyst \
-    && git checkout tags/$CUTELYST_VERSION \
-    && mkdir build && cd build \
-    && export QT_SELECT=qt5 \
-    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DPLUGIN_VIEW_GRANTLEE=on \
-    && make && make install \ 
-    # Build virtlyst
-    && cd /usr/local/src/Virtlyst \
-    && cmake . \
-    && make
-
 FROM debian:stretch
 # Start with a clean image but keep compiled stuff
 COPY --from=builder /usr/local /usr/local
-WORKDIR /usr/local/src/Virtlyst
+WORKDIR /usr/local/Virtlyst
 
 RUN apt-get update \
     # Install dependencies
@@ -34,12 +15,9 @@ RUN apt-get update \
     && apt-get clean \
     # Fix ld library path
     && echo "/usr/local/lib/x86_64-linux-gnu" > /etc/ld.so.conf.d/usr-local.conf \
-    && ldconfig \
-    # Prepare config file
-    && cp example-config.ini config.ini \
-    && sed -i -e 's/virtlyst\.sqlite/\/data\/virtlyst\.sqlite/g' config.ini \
-    && sed -i -e 's/TemplatePath = \./TemplatePath = root\/src/g' config.ini
+    && echo "/usr/local/Virtlyst" >> /etc/ld.so.conf.d/usr-local.conf \
+    && ldconfig
 
 EXPOSE 3000
-VOLUME /data
+VOLUME /usr/local/Virtlyst/data
 CMD ["/usr/local/bin/cutelyst-wsgi2","--ini","config.ini"]

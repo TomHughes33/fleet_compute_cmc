@@ -199,7 +199,7 @@ StorageVol *StoragePool::createStorageVolume(const QString &name, const QString 
 
     stream.writeStartElement(QStringLiteral("target"));
     stream.writeStartElement(QStringLiteral("format"));
-    stream.writeAttribute(QStringLiteral("type"), format);
+    stream.writeAttribute(QStringLiteral("type"), localFormat);
     stream.writeEndElement(); // format
     stream.writeEndElement(); // target
 

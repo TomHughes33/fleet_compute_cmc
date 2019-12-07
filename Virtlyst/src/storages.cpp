@@ -145,12 +145,22 @@ void Storages::storage(Context *c, const QString &hostId, const QString &pool)
                 vol->undefine();
             }
         } else if (params.contains(QStringLiteral("iso_upload"))) {
-	    const auto uploads = c->request()->uploads();
-	    // StorageVol *vol = storage->getVolume("iso");
+          qDebug() << "iso_upload";
+            const auto uploads = c->request()->uploads();
 
-            for (Upload *upload : uploads) {
-             upload->save("/var/lib/libvirt/iso-images/" + upload->filename());
-           }
+            for (auto upload : uploads) {
+              if (upload->filename().isEmpty())
+                continue;
+              auto vol = storage->getVolume(upload->filename());
+              if (!vol) {
+                qDebug() << "create storage volume: " << upload->filename();
+                  vol = storage->createStorageVolume(upload->filename(),
+                                                     QStringLiteral("raw"),
+                                                     0,
+                                                     0);
+              }
+              vol->upload(upload);
+            }
         } else if (params.contains(QStringLiteral("cln_volume"))) {
             QString imageName = params[QStringLiteral("name")] + QLatin1String(".img");
             const QString volName = params[QStringLiteral("image")];

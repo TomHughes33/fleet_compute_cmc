@@ -92,36 +92,24 @@ Connection::Connection(virConnectPtr conn, QObject *parent) : QObject(parent), m
 
 Connection::Connection(const QUrl &url, const QString &name, QObject *parent) : QObject(parent)
 {
-
     setName(name);
-    int online=isOnline();
 
-//    const QString uri = url.toString(QUrl::RemoveUserInfo);
-//    qDebug() << "Connecting to" << uri ;
     const QString uri = url.toString(QUrl::RemovePassword);
-    qCDebug(VIRT_CONN) << "Connecting to" << uri << " which is online=" << online;
+    qCDebug(VIRT_CONN) << "Connecting to" << uri;
     QUrl localUrl(url);
     virConnectAuth auth;
     auth.credtype = authCreds;
     auth.ncredtype = sizeof(authCreds)/sizeof(int);
     auth.cb = authCb;
     auth.cbdata = &localUrl;
-  
 
-    if (online == 0 ) { 
-        //qDebug() << "Close connection to" << uri << m_conn << m_connName;
-       	//if (isAlive()) virConnectClose(m_conn);
-	m_conn=NULL;
-	return;
-	}
-    else	
-        m_conn = virConnectOpenAuth(uri.toUtf8().constData(), &auth, 0);
+    m_conn = virConnectOpenAuth(uri.toUtf8().constData(), &auth, 0);
     if (m_conn == NULL) {
         qCWarning(VIRT_CONN) << "Failed to open connection to" << url;
         return;
     }
-//   qDebug() << "Connected to" << uri;
-     qCDebug(VIRT_CONN) << "Connected to" << uri;
+
+    qCDebug(VIRT_CONN) << "Connected to" << uri;
 }
 
 Connection::~Connection()
@@ -209,28 +197,6 @@ uint Connection::cpus()
     }
     return m_nodeInfo.cpus;
 }
-
-
-
-bool Connection::isOnline()
-{
-
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
-                QStringLiteral("SELECT isonline FROM servers_compute where name=:name"),
-                QStringLiteral("virtlyst"));
-    query.bindValue(QStringLiteral(":name"), name());		
-    if (!query.exec()) {
-        qWarning() << "Failed to get online status" << query.lastError().databaseText();
-    }
-    query.next();
-    // qDebug() << "query.value(0).toInt()" << name() << ":" << query.value(0).toInt() ;
-    if (query.value(0).toInt() == 1) 
-       return true;
-    else
-       return false;
-
-}
-
 
 bool Connection::isAlive()
 {
