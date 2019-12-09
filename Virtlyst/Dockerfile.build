@@ -12,7 +12,7 @@ RUN useradd -M -u $UID builder
 
 RUN apt-get update \
     # Install build dependencies
-    && apt-get install -y git cmake g++ qtbase5-dev libgrantlee5-dev pkg-config libvirt-dev \
+    && apt-get install -y git cmake g++ qtbase5-dev libqt5sql5 libqt5sql5-psql libpq-dev libgrantlee5-dev pkg-config libvirt-dev \
     && cd /usr/local/src \
     # Build cutelyst
     && git clone https://github.com/cutelyst/cutelyst.git \

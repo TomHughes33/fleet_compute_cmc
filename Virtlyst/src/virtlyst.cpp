@@ -23,6 +23,7 @@
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
 #include <grantlee/engine.h>
+#include <postgresql/libpq-fe.h>
 
 #include <QFile>
 #include <QMutexLocker>
@@ -135,8 +136,17 @@ bool Virtlyst::postFork()
 {
     QMutexLocker locker(&mutex);
 
-    auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Cutelyst::Sql::databaseNameThread(QStringLiteral("virtlyst")));
-    db.setDatabaseName(m_dbPath);
+    //PGconn *con = PQconnectdb("dbname=fleetcompute user=fleetcompute password=fleetcompute hostaddr=172.16.141.142 port=5432");
+    //QPSQLDriver *drv =  new QPSQLDriver(con);
+    //QSqlDatabase db = QSqlDatabase::addDatabase(drv); // becomes the new default connection
+    //auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Cutelyst::Sql::databaseNameThread(QStringLiteral("virtlyst")));
+    auto db = QSqlDatabase::addDatabase(QStringLiteral("QPSQL"));
+    db.setUserName("fleetcompute");
+    db.setPassword("fleetcompute");
+    db.setDatabaseName("fleetcompute");
+    db.setPort(5432);
+    db.setHostName("172.16.141.142");
+    //db.setDatabaseName(m_dbPath);
     if (!db.open()) {
         qCWarning(VIRTLYST) << "Failed to open database" << db.lastError().databaseText();
         return false;
@@ -254,6 +264,12 @@ void Virtlyst::updateConnections()
         int type = query.value(5).toInt();
         ids << id;
 
+        qDebug() << "id: " << id;
+        qDebug() << "name: " << name;
+        qDebug() << "hostname: " << hostname;
+        qDebug() << "login: " << login;
+        qDebug() << "password: " << password;
+
         ServerConn *server = m_connections.value(id);
         if (server) {
             if (server->name == name &&
@@ -282,8 +298,16 @@ void Virtlyst::updateConnections()
             url = QStringLiteral("qemu:///system");
             break;
         case ServerConn::ConnSSH:
-            url = QStringLiteral("qemu+ssh:///system");
-            url.setHost(hostname);
+            //url = QStringLiteral("qemu+ssh:///system");
+            url = QStringLiteral("qemu+ssh:///system?keyfile=/root/.ssh/id_rsa_hosting");
+            if (hostname.contains(':')) {
+                QRegExp separator(":");
+                QStringList list = hostname.split(separator);
+                url.setHost(list.at(0));
+                url.setPort(list.at(1).toInt());
+            } else {
+              url.setHost(hostname);
+            }
             url.setUserName(login);
             break;
         case ServerConn::ConnTCP:
