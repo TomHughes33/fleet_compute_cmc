@@ -145,7 +145,7 @@ bool Virtlyst::postFork()
     db.setPassword("fleetcompute");
     db.setDatabaseName("fleetcompute");
     db.setPort(5432);
-    db.setHostName("172.16.141.142");
+    db.setHostName("172.17.0.1");
     //db.setDatabaseName(m_dbPath);
     if (!db.open()) {
         qCWarning(VIRTLYST) << "Failed to open database" << db.lastError().databaseText();
