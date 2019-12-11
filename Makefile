@@ -1,7 +1,7 @@
 export DOCKER_REGISTRY_URL ?= 172.16.141.201:5000
 
 service    := cmc
-registry   ?= $(DOCKER_REGISTRY_URL)
+registry   := $(DOCKER_REGISTRY_URL)
 image_name := inmarsat/fc/$(service)
 ver_major  := $(shell git describe | sed -e 's/\([0-9]\+\).*/\1/')
 ver_minor  := $(shell git describe | sed -e 's/[0-9]\+\.\([0-9]\+\).*/\1/')
