@@ -93,7 +93,7 @@ bool Root::Auto(Context *c)
     }
 
     c->setStash(QStringLiteral("user"), Authentication::user(c));
-    c->setStash(QStringLiteral("time_refresh"), 800000);
+    c->setStash(QStringLiteral("time_refresh"), 100000);
 
     m_virtlyst->updateConnections();
 
