@@ -93,9 +93,9 @@
             <li><a href="#forceshutdown" data-toggle="tab">{% i18n "Force Shutdown" %}</a></li>
             <li><a href="#suspend" data-toggle="tab">{% i18n "Suspend" %}</a></li>
             {% endif %}
-            {% if domain.status != 5 or domain.hasManagedSaveImage == 1 %}
+            <!--{% if domain.status != 5 or domain.hasManagedSaveImage == 1 %}
             <li><a href="#managedsave" data-toggle="tab">{% i18n "Save" %}</a></li>
-            {% endif %}
+	    {% endif %}-->
         </ul>
         <div class="tab-content">
             <div class="tab-pane tab-inst active" id="shutdown">
@@ -154,7 +154,7 @@
                 <div class="clearfix"></div>
             </div>
             {% endif %}
-            {% if status != 5 or domain.hasManagedSaveImage == 1 %}
+            <!--{% if status != 5 or domain.hasManagedSaveImage == 1 %}
             <div class="tab-pane tab-inst" id="managedsave">
                 <p>{% i18n "This action saves the state of the instance." %}</p>
 
@@ -179,7 +179,7 @@
                 </form>
                 <div class="clearfix"></div>
             </div>
-            {% endif %}
+	    {% endif %}-->
         </div>
     </div>
     <div class="tab-pane" id="access" style="margin-top: 20px">
