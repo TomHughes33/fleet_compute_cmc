@@ -140,12 +140,15 @@ bool Virtlyst::postFork()
     //QPSQLDriver *drv =  new QPSQLDriver(con);
     //QSqlDatabase db = QSqlDatabase::addDatabase(drv); // becomes the new default connection
     //auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Cutelyst::Sql::databaseNameThread(QStringLiteral("virtlyst")));
+    auto db_ip = config(QStringLiteral("DatabaseIP")).toString();
+    qDebug() << "database ip from config.ini" << db_ip;
     auto db = QSqlDatabase::addDatabase(QStringLiteral("QPSQL"));
     db.setUserName("fleetcompute");
     db.setPassword("fleetcompute");
     db.setDatabaseName("fleetcompute");
     db.setPort(5432);
-    db.setHostName("172.17.0.1");
+    db.setHostName(db_ip.toStdString().c_str());
+    //db.setHostName("172.17.0.1");
     //db.setDatabaseName(m_dbPath);
     if (!db.open()) {
         qCWarning(VIRTLYST) << "Failed to open database" << db.lastError().databaseText();
