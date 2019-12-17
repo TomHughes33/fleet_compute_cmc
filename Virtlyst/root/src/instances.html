@@ -57,10 +57,10 @@
                                         <button class="btn btn-sm btn-default disabled" title="{% i18n "Suspend" %}">
                                             <span class="glyphicon glyphicon-pause"></span>
                                         </button>
-                                        <button class="btn btn-sm btn-default disabled" title="{% i18n "Save" %}">
+                                        <!--<button class="btn btn-sm btn-default disabled" title="{% i18n "Save" %}">
                                             <span class="glyphicon glyphicon-download-alt"></span>
-                                        </button>
-                                        {% if inst.has_managed_save_image == 1 %}
+					</button>
+					{% if inst.has_managed_save_image == 1 %}
                                             <button class="btn btn-sm btn-default" type="submit" name="deletesaveimage"
                                                     title="{% i18n "Delete Save Image" %}"
                                                     onclick='return confirm('Are you sure?')'>
@@ -70,7 +70,10 @@
                                             <button class="btn btn-sm btn-default disabled" title="{% i18n "Shutdown" %}">
                                                 <span class="glyphicon glyphicon-off"></span>
                                             </button>
-                                        {% endif %}
+					    {% endif %}-->
+					<button class="btn btn-sm btn-default disabled" title="{% i18n "Shutdown" %}">
+                                                <span class="glyphicon glyphicon-off"></span>
+                                        </button>
                                         <button class="btn btn-sm btn-default disabled"
                                                 title="{% i18n "Force Shutdown" %}">
                                             <span class="glyphicon glyphicon-stop"></span>
@@ -87,10 +90,10 @@
                                         <button class="btn btn-sm btn-default disabled" title="{% i18n "Suspend" %}">
                                             <span class="glyphicon glyphicon-pause"></span>
                                         </button>
-                                        <button class="btn btn-sm btn-default" type="submit" name="managedsave"
+                                        <!--<button class="btn btn-sm btn-default" type="submit" name="managedsave"
                                                 title="{% i18n "Save" %}">
                                             <span class="glyphicon glyphicon-download-alt"></span>
-                                        </button>
+					</button>-->
                                         <button class="btn btn-sm btn-default disabled" title="{% i18n "Shutdown" %}">
                                             <span class="glyphicon glyphicon-off"></span>
                                         </button>
@@ -111,11 +114,11 @@
                                                 onclick="return confirm('Are you sure?')">
                                             <span class="glyphicon glyphicon-pause"></span>
                                         </button>
-                                        <button class="btn btn-sm btn-default" type="submit" name="managedsave"
+                                        <!--<button class="btn btn-sm btn-default" type="submit" name="managedsave"
                                                 title="{% i18n "Save" %}"
                                                 onclick="return confirm('Are you sure?')">
                                             <span class="glyphicon glyphicon-download-alt"></span>
-                                        </button>
+					</button>-->
                                         <button class="btn btn-sm btn-default" type="submit" name="shutdown"
                                                 title="{% i18n "Shutdown" %}"
                                                 onclick="return confirm('Are you sure?')">
