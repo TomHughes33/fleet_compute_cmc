@@ -86,6 +86,8 @@ public:
 
     void updateConnections();
 
+    bool checkSSHconnection(QString &host, int port);
+
 private:
     bool createDB();
 

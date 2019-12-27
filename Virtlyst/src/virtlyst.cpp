@@ -38,6 +38,10 @@
 #include <QLoggingCategory>
 #include <QCoreApplication>
 
+#include <libssh/libssh.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "lib/connection.h"
 
 #include "infrastructure.h"
@@ -296,6 +300,8 @@ void Virtlyst::updateConnections()
         server->type = type;
 
         QUrl url;
+	QString host;
+	int port;
         switch (type) {
         case ServerConn::ConnSocket:
             url = QStringLiteral("qemu:///system");
@@ -308,6 +314,8 @@ void Virtlyst::updateConnections()
                 QStringList list = hostname.split(separator);
                 url.setHost(list.at(0));
                 url.setPort(list.at(1).toInt());
+		host = list.at(0);
+		port = list.at(1).toInt();
             } else {
               url.setHost(hostname);
             }
@@ -333,6 +341,12 @@ void Virtlyst::updateConnections()
           server->conn = new Connection(url, name, server);
           break;
         case ServerConn::ConnSSH:
+	  if(checkSSHconnection(host, port)){
+            server->conn = server->isonline() ?
+              new Connection(url, name, server)
+              : nullptr;
+	  }
+          break;
         case ServerConn::ConnTCP:
         case ServerConn::ConnTLS:
           server->conn = server->isonline() ?
@@ -494,4 +508,31 @@ ServerConn *ServerConn::clone(QObject *parent)
     ret->conn = conn ? conn->clone(ret) : nullptr;
 
     return ret;
+}
+
+bool Virtlyst::checkSSHconnection(QString &host, int port)
+{
+  ssh_session my_ssh_session;
+  int rc;
+  bool ret;
+
+  my_ssh_session = ssh_new();
+  if (my_ssh_session == NULL)
+    exit(-1);
+  ssh_options_set(my_ssh_session, SSH_OPTIONS_HOST, host.toStdString().c_str());
+  ssh_options_set(my_ssh_session, SSH_OPTIONS_PORT, &port);
+  rc = ssh_connect(my_ssh_session);
+  if (rc != SSH_OK)
+  {
+        qWarning() << "Error connecting to host - " << ssh_get_error(my_ssh_session);
+    	ret = false;
+  }
+  else {
+       qDebug() << "ssh connection successful ";
+       ret = true;
+  }
+
+  ssh_disconnect(my_ssh_session);
+  ssh_free(my_ssh_session);
+  return ret;
 }
