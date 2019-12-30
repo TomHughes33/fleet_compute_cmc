@@ -50,7 +50,6 @@
                     <div class="col-xs-12 col-sm-4">
                         <div class="panel {% if host.alive %}panel-success{% else %}panel-danger{% endif %} panel-data">
                             <div class="panel-heading">
-                                {% if host.alive %}
                                     <h3 class="panel-title">
                                         <a href="/instances/{{ host.id }}"><strong>{{ host.name }}</strong></a>
                                         <a data-toggle="modal" href="#editHost{{ host.id }}" class="pull-right"
@@ -58,14 +57,12 @@
                                             <span class="glyphicon glyphicon-pencil"></span>
                                         </a>
                                     </h3>
-                                {% else %}
-                                    <h3 class="panel-title"><strong>{{ host.name }}</strong>
-                                        <a data-toggle="modal" href="#editHost{{ host.id }}" class="pull-right"
-                                           title="{% i18n "Edit" %}">
-                                            <span class="glyphicon glyphicon-pencil"></span>
-                                        </a>
-                                    </h3>
-                                {% endif %}
+				    <!-- <h3 class="panel-title"><strong>{{ host.name }}</strong> -->
+				    <!--     <a data-toggle="modal" href="#editHost{{ host.id }}" class="pull-right" -->
+				    <!--        title="{% i18n "Edit" %}"> -->
+				    <!--         <span class="glyphicon glyphicon-pencil"></span> -->
+				    <!--     </a> -->
+				    <!-- </h3> -->
                             </div>
                             <div class="panel-body">
                                 <p>
