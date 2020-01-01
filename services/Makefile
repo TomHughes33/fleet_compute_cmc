@@ -1,8 +1,8 @@
-export DOCKER_REGISTRY_URL ?= ecr.isatedge-shore.com
+export DOCKER_REGISTRY_URL ?= ecr.isatedge-edge.com
 export DOCKER_REGISTRY_URL ?= 172.16.141.201:5000
 
 service    := cmc
-ecr        ?= ecr.isatedge-shore.com
+ecr        ?= ecr.isatedge-edge.com
 registry   := $(DOCKER_REGISTRY_URL)
 image_name := inmarsat/fc/$(service)
 ver_base   := $(shell cicd version latest-tag --component $(service) --version-only)
@@ -40,7 +40,7 @@ DOCKER_RUN_FLAGS += --env all_proxy=$(PROXY)
 endif
 
 GET_SERVICE_VERSIONS := docker run  $(DOCKER_RUN_INFO_FLAGS) \
-        ecr.isatedge-shore.com/inmarsat/pandora-pipeline/test-environment \
+        ecr.isatedge-edge.com/inmarsat/pandora-pipeline/test-environment \
                 /opt/pandora_python_libs/pandora/get_artifact_info.py
 
 RECORD_VER_INFO := docker run $(DOCKER_RUN_INFO_FLAGS) \
