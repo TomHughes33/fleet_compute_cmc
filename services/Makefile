@@ -63,26 +63,26 @@ build_env:
 	docker run $(DOCKER_RUN_FLAGS) cmd_build_env bash
 
 build: build_env
-        docker exec -t -u builder cmc_build bash -c "mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && make"
-        docker exec -t -u root cmc_build bash -c "cd build && make install"
-        docker commit cmc_build cmc_build_env
+	docker exec -t -u builder cmc_build bash -c "mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && make"
+	docker exec -t -u root cmc_build bash -c "cd build && make install"
+	docker commit cmc_build cmc_build_env
 
 image: build
-        docker build -t $(image) -f Virtlyst/Dockerfile .
+	docker build -t $(image) -f Virtlyst/Dockerfile .
 
 run: image
-        docker run -d -t --rm --name=cmc -v /data:/usr/local/Virtlyst/data -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock -p 3000:3000 $(image)
+	docker run -d -t --rm --name=cmc -v /data:/usr/local/Virtlyst/data -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock -p 3000:3000 $(image)
 
 stop:
 	-docker rm -f cmc
 
 publish: image
-        docker tag $(image) $(registry)/$(image)
-        docker tag $(image) $(registry)/$(image_name):latest
-        docker push $(registry)/$(image)
-        docker push $(registry)/$(image_name):latest
-        docker rmi $(registry)/$(image)
-        docker rmi $(registry)/$(image_name):latest
+	docker tag $(image) $(registry)/$(image)
+	docker tag $(image) $(registry)/$(image_name):latest
+	docker push $(registry)/$(image)
+	docker push $(registry)/$(image_name):latest
+	docker rmi $(registry)/$(image)
+	docker rmi $(registry)/$(image_name):latest
 
 add_info_to_dashboard:
 	$(RECORD_VER_INFO) \

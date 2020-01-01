@@ -2,10 +2,10 @@
 
 set -e
 
-service=lmc
+service=cmc
 changed=$(cicd version changed-components --component ${service}=.)
 
-test -z "${changed}" && exit 0
+#test -z "${changed}" && exit 0
 
 cur_tag=$(cicd version latest-tag --component ${service})
 new_tag=$(cicd version create-tag --component ${service})
