@@ -17,7 +17,7 @@ pipeline {
 
         stage("Build cmc service") {
             steps {
-                sh "./release.sh"
+                sh "cd services && ./release.sh"
             }
         }
     }
