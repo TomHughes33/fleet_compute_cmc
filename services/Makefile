@@ -59,8 +59,8 @@ versions:
 
 build_env:
 	-docker rm -f cmc cmc_build
-	docker build -t cmc_build_env --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
-	docker run $(DOCKER_RUN_FLAGS) cmc_build_env bash
+	docker build -t cmd_build_env --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
+	docker run $(DOCKER_RUN_FLAGS) cmd_build_env bash
 
 build: build_env
 	docker exec -t -u builder cmc_build bash -c "mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && make"
