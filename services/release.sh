@@ -5,7 +5,7 @@ set -e
 service=cmc
 changed=$(cicd version changed-components --component ${service}=.)
 
-#test -z "${changed}" && exit 0
+test -z "${changed}" && exit 0
 
 cur_tag=$(cicd version latest-tag --component ${service})
 new_tag=$(cicd version create-tag --component ${service})
@@ -18,7 +18,7 @@ make publish
 make add_info_to_dashboard job_result=SUCCESS
 
 # push the tags
-git push --tags
+#git push --tags
 
 # update edge service versions and tag
 #cd ../../
