@@ -1,4 +1,3 @@
-export DOCKER_REGISTRY_URL ?= ecr.isatedge-edge.com
 export DOCKER_REGISTRY_URL ?= 172.16.141.201:5000
 
 service    := cmc
