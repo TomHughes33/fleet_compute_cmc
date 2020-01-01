@@ -93,6 +93,7 @@ add_info_to_dashboard:
 update_service_versions:        
 	git clone --no-checkout --depth 1 --branch flc-91 git@github.com:Inmarsat/fleet_compute.git && cd fleet_compute && git reset && git checkout origin/flc-91 edge/provisioning/service_versions.yaml
 	sed -i "/version_cmc/c\version_$(service): $(image_ver)" fleet_compute/edge/provisioning/service_versions.yaml
+	@echo $(shell fleet_compute/edge/provisioning/service_versions.yaml)
 	@if cd fleet_compute && ! git diff --exit-code -- edge/provisioning/service_versions.yaml; then \
                 git add edge/provisioning/service_versions.yaml; \
                 git commit -m "Auto update service verison file"; \
