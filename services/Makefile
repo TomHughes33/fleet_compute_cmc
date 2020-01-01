@@ -59,7 +59,7 @@ versions:
 
 build_env:
 	-docker rm -f cmc cmc_build
-	docker build -t cmc_build_env --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
+	docker build -t cmd_build_env --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
 	docker run $(DOCKER_RUN_FLAGS) cmd_build_env bash
 
 build: build_env
