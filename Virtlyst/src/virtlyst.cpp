@@ -37,6 +37,7 @@
 #include <QStandardPaths>
 #include <QLoggingCategory>
 #include <QCoreApplication>
+#include <QProcess>
 
 #include <libssh/libssh.h>
 #include <stdlib.h>
@@ -301,6 +302,7 @@ void Virtlyst::updateConnections()
 
         QUrl url;
 	QString host;
+	QString sshcmd;
 	int port;
         switch (type) {
         case ServerConn::ConnSocket:
@@ -308,7 +310,7 @@ void Virtlyst::updateConnections()
             break;
         case ServerConn::ConnSSH:
             //url = QStringLiteral("qemu+ssh:///system");
-            url = QStringLiteral("qemu+ssh:///system?keyfile=/root/.ssh/id_rsa_hosting");
+            url = QStringLiteral("qemu+ssh:///system?no_verify=1&keyfile=/root/.ssh/id_rsa_hosting");
             if (hostname.contains(':')) {
                 QRegExp separator(":");
                 QStringList list = hostname.split(separator);
@@ -318,8 +320,15 @@ void Virtlyst::updateConnections()
 		port = list.at(1).toInt();
             } else {
               url.setHost(hostname);
+	      host = hostname;
             }
             url.setUserName(login);
+
+	    //Execute command to avoid known host issue for new corp IP
+            qDebug() << "Before known host cmd ";
+            sshcmd = "ssh localhost sudo ssh-keygen -f /root/.ssh/known_hosts -R [" + host + "]:50022";
+            QProcess::execute (sshcmd);
+            qDebug() << "After known host cmd ";
             break;
         case ServerConn::ConnTCP:
             url = QStringLiteral("qemu+tcp:///system");
