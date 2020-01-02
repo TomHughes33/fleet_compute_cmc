@@ -58,8 +58,8 @@ versions:
 
 build_env:
 	-docker rm -f cmc cmc_build
-	docker build -t cmd_build_env --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
-	docker run $(DOCKER_RUN_FLAGS) cmd_build_env bash
+	docker build -t cmc_build_env --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
+	docker run $(DOCKER_RUN_FLAGS) cmc_build_env bash
 
 build: build_env
 	docker exec -t -u builder cmc_build bash -c "mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && make"
@@ -91,17 +91,17 @@ add_info_to_dashboard:
 
 
 update_service_versions:        
-	git clone --no-checkout --depth 1 --branch flc-91 git@github.com:Inmarsat/fleet_compute.git && cd fleet_compute && git reset && git checkout origin/flc-91 edge/provisioning/service_versions.yaml
+	git clone --no-checkout --depth 1 --branch versioning git@github.com:Inmarsat/fleet_compute.git && cd fleet_compute && git reset && git checkout origin/flc-91 edge/provisioning/service_versions.yaml
 	sed -i "/version_cmc/c\version_$(service): $(image_ver)" fleet_compute/edge/provisioning/service_versions.yaml
 	@if cd fleet_compute && ! git diff --exit-code -- edge/provisioning/service_versions.yaml; then \
                 git add edge/provisioning/service_versions.yaml; \
                 git commit -m "Auto update service verison file"; \
                 i=0; \
-                while [ $$i -lt 5 ] && ! git push origin flc-91; \
+                while [ $$i -lt 5 ] && ! git push origin versioning; \
                 do \
                         @echo "inside whiledo"; \
                         i=$$((i+1)); \
-                        git pull origin flc-91; \
+                        git pull origin versioning; \
                 done; \
   fi
 
