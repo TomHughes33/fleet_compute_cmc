@@ -18,9 +18,9 @@ make publish
 make add_info_to_dashboard job_result=SUCCESS
 
 # push the tags
-#git push --tags
+git push --tags
 
 # update edge service versions and tag
 #cd ../../
 make update_service_versions
-#make update_version
+make update_version

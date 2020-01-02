@@ -11,7 +11,7 @@ image_ver  ?= $(ver_base).0-$(ver_branch)
 image      := $(image_name):$(image_ver)
 user       := $(shell id -u)
 PROXY      ?=
-svc_ver_file     := ./service_versions.yaml
+#svc_ver_file     := ./service_versions.yaml
 services         := $(subst services/,,$(wildcard services/*))
 
 DOCKER_RUN_FLAGS := \
@@ -91,11 +91,11 @@ add_info_to_dashboard:
 
 
 update_service_versions:        
-	git clone --no-checkout --depth 1 --branch versioning git@github.com:Inmarsat/fleet_compute.git && cd fleet_compute && git reset && git checkout origin/versioning edge/provisioning/service_versions.yaml
-	sed -i "/version_cmc/c\version_$(service): $(image_ver)" fleet_compute/edge/provisioning/service_versions.yaml
-	@if cd fleet_compute && ! git diff --exit-code -- edge/provisioning/service_versions.yaml; then \
-                git add edge/provisioning/service_versions.yaml; \
-                git commit -m "Auto update service verison file"; \
+	git clone --no-checkout --depth 1 --branch versioning git@github.com:Inmarsat/fleet_compute.git && cd fleet_compute && git reset && git checkout origin/versioning shore/provisioning/service_versions.yaml
+	sed -i "/version_cmc/c\version_$(service): $(image_ver)" fleet_compute/shore/provisioning/service_versions.yaml
+	@if cd fleet_compute && ! git diff --exit-code -- shore/provisioning/service_versions.yaml; then \
+                git add shore/provisioning/service_versions.yaml; \
+                git commit -m "Auto update Shore service verison file"; \
                 i=0; \
                 while [ $$i -lt 5 ] && ! git push origin versioning; \
                 do \
