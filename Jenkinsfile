@@ -18,10 +18,10 @@ pipeline {
         stage("Build cmc/lmc service") {
             steps {
                 script {
-                    if (${SERVICE_NAME} == 'cmc') {
+                    if (env.SERVICE_NAME == 'cmc') {
                 	sh "./release.sh"
                     }
-                    if (${SERVICE_NAME} == 'lmc') {
+                    if (env.SERVICE_NAME == 'lmc') {
                 	sh "./release_lmc.sh"
                     }
                 }
