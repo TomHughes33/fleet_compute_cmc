@@ -17,7 +17,7 @@ echo "Making release"
 make -f Makefile_lmc publish
 make -f Makefile_lmc add_info_to_dashboard job_result=SUCCESS
 
-# push the tags #
+# push the tags 
 #git push --tags
 
 # update edge service versions and tag
