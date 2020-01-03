@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/img/favicon.ico">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css" >
+    <link href="/static/css/main.css" rel="stylesheet">
+    {% block style %}{% endblock %}
+</head>
+
+<body>
+<nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+             <img src="/static/img/inmarsat-logo.png" alt="" />
+        </div>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Fleet Compute</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/infrastructure"
+                       title="{% i18n "Show all host and vm's" %}">{% i18n "Virtual Machines" %}</a>
+                </li>
+		    <li>
+                    <a href="/users"
+                       title="{% i18n "Manage users" %}">{% i18n "Users" %}</a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.id %}
+                    <li class="">
+                        <a href="/logout">{% i18n "Sign out" %}</a>
+                    </li>
+                {% else %}
+                    <li class="">
+                        <a href="/login">{% i18n "Sign in" %}</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+<script src="/static/js/jquery/jquery.min.js"></script>
+<script src="/static/js/bootstrap/bootstrap.min.js"></script>
+<script src="/static/js/check-password.js"></script>
+{% block script %}{% endblock %}
+</body>
+</html>
