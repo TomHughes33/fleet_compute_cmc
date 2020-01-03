@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     if (env.SERVICE_NAME == 'cmc') {
-                	sh "./release.sh"
+                	sh "./release_cmc.sh"
                     }
                     if (env.SERVICE_NAME == 'lmc') {
                 	sh "./release_lmc.sh"
