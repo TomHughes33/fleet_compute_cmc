@@ -68,7 +68,7 @@ build: build_env
 	docker commit lmc_build lmc_build_env
 
 image: build
-	docker build -t $(image) -f Virtlyst/Dockerfile .
+	docker build -t $(image) -f Virtlyst/Dockerfile.lmc .
 
 run: image
 	docker run -d -t --rm --name=lmc -v /data:/usr/local/Virtlyst/data -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock -p 3000:3000 $(image)
