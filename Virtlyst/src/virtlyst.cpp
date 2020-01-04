@@ -146,11 +146,14 @@ bool Virtlyst::postFork()
     //QSqlDatabase db = QSqlDatabase::addDatabase(drv); // becomes the new default connection
     //auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Cutelyst::Sql::databaseNameThread(QStringLiteral("virtlyst")));
     auto db_ip = config(QStringLiteral("DatabaseIP")).toString();
+    auto db_user = config(QStringLiteral("DatabaseUser")).toString();
+    auto db_name = config(QStringLiteral("DatabaseName")).toString();
+    auto db_pwd = config(QStringLiteral("DatabasePwd")).toString();	
     qDebug() << "database ip from config.ini" << db_ip;
     auto db = QSqlDatabase::addDatabase(QStringLiteral("QPSQL"));
-    db.setUserName("fleetcompute");
-    db.setPassword("fleetcompute");
-    db.setDatabaseName("fleetcompute");
+    db.setUserName(db_user.toStdString().c_str());
+    db.setPassword(db_pwd.toStdString().c_str());
+    db.setDatabaseName(db_name.toStdString().c_str());
     db.setPort(5432);
     db.setHostName(db_ip.toStdString().c_str());
     //db.setHostName("172.17.0.1");
