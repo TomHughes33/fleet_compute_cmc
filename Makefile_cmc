@@ -95,7 +95,7 @@ update_service_versions:
 	sed -i "/version_cmc/c\version_$(service): $(image_ver)" fleet_compute/shore/provisioning/service_versions.yaml
 	@if cd fleet_compute && ! git diff --exit-code -- shore/provisioning/service_versions.yaml; then \
                 git add shore/provisioning/service_versions.yaml; \
-                git commit -m "Auto update Shore service verison file"; \
+                git commit -m "Auto update Shore service version file"; \
                 i=0; \
                 while [ $$i -lt 5 ] && ! git push origin master; \
                 do \
