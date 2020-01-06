@@ -91,17 +91,17 @@ add_info_to_dashboard:
 
 
 update_service_versions:        
-	git clone --no-checkout --depth 1 --branch flc-305 git@github.com:Inmarsat/fleet_compute.git && cd fleet_compute && git reset && git checkout origin/flc-305 shore/provisioning/service_versions.yaml
+	git clone --no-checkout --depth 1 git@github.com:Inmarsat/fleet_compute.git && cd fleet_compute && git reset && git checkout origin/master shore/provisioning/service_versions.yaml
 	sed -i "/version_cmc/c\version_$(service): $(image_ver)" fleet_compute/shore/provisioning/service_versions.yaml
 	@if cd fleet_compute && ! git diff --exit-code -- shore/provisioning/service_versions.yaml; then \
                 git add shore/provisioning/service_versions.yaml; \
                 git commit -m "Auto update Shore service verison file"; \
                 i=0; \
-                while [ $$i -lt 5 ] && ! git push origin flc-305; \
+                while [ $$i -lt 5 ] && ! git push origin master; \
                 do \
                         @echo "inside whiledo"; \
                         i=$$((i+1)); \
-                        git pull origin flc-305; \
+                        git pull origin master; \
                 done; \
   fi
 
