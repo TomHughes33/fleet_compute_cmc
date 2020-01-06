@@ -14,31 +14,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SERVER_H
-#define SERVER_H
+#include "overview.h"
 
-#include <QObject>
+#include "lib/connection.h"
+#include "virtlyst.h"
 
-#include <Cutelyst/Controller>
+#include <QLoggingCategory>
 
-using namespace Cutelyst;
-
-class Virtlyst;
-class Server : public Cutelyst::Controller
+Overview::Overview(Virtlyst *parent) : Controller(parent)
+  , m_virtlyst(parent)
 {
-    Q_OBJECT
-public:
-    explicit Server(Virtlyst *parent = nullptr);
 
-    C_ATTR(index, :Path :AutoArgs)
-    void index(Context *c);
+}
 
-private:
-    void createServer(int type, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void deleteServer(int id);
+void Overview::index(Context *c, const QString &hostId)
+{
+    c->setStash(QStringLiteral("template"), QStringLiteral("hostdetail.html"));
+    c->setStash(QStringLiteral("host_id"), hostId);
 
-    Virtlyst *m_virtlyst;
-};
-
-#endif // SERVER_H
+    Connection *conn = m_virtlyst->connection(hostId, c);
+    if (conn == nullptr) {
+        qWarning() << "Host id not found or connection not active";
+        c->response()->redirect(c->uriForAction(QStringLiteral("/index")));
+        return;
+    }
+    c->setStash(QStringLiteral("host"), QVariant::fromValue(conn));
+}

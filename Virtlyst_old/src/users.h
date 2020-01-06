@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2019 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -14,31 +14,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SERVER_H
-#define SERVER_H
-
-#include <QObject>
+#ifndef USERS_H
+#define USERS_H
 
 #include <Cutelyst/Controller>
 
 using namespace Cutelyst;
 
-class Virtlyst;
-class Server : public Cutelyst::Controller
+class Users : public Controller
 {
     Q_OBJECT
 public:
-    explicit Server(Virtlyst *parent = nullptr);
+    explicit Users(QObject *parent = nullptr);
 
     C_ATTR(index, :Path :AutoArgs)
     void index(Context *c);
 
-private:
-    void createServer(int type, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void deleteServer(int id);
+    C_ATTR(create, :Local :AutoArgs)
+    void create(Context *c);
 
-    Virtlyst *m_virtlyst;
+    C_ATTR(edit, :Local :AutoArgs)
+    void edit(Context *c, const QString &id);
+
+    C_ATTR(change_password, :Local :AutoArgs)
+    void change_password(Context *c, const QString &id);
 };
 
-#endif // SERVER_H
+#endif // USERS_H
+

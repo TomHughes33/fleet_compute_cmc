@@ -46,35 +46,32 @@ void Server::index(Context *c)
             const QString login = params[QStringLiteral("login")];
             const QString password = params[QStringLiteral("password")];
 
-            createServer(ServerConn::ConnTCP, name, hostname, login, password, QString());
+            createServer(ServerConn::ConnTCP, name, hostname, login, password);
         } else if (params.contains(QStringLiteral("host_ssh_add"))) {
             const QString hostname = params[QStringLiteral("hostname")];
             const QString name = params[QStringLiteral("name")];
             const QString login = params[QStringLiteral("login")];
-            const QString vessel = params[QStringLiteral("vessel_name")];
 
-            //createServer(ServerConn::ConnSSH, name, hostname, login, QString());
-            createServer(ServerConn::ConnSSH, name, hostname, login, QString(), vessel);
+            createServer(ServerConn::ConnSSH, name, hostname, login, QString());
         } else if (params.contains(QStringLiteral("host_tls_add"))) {
             const QString hostname = params[QStringLiteral("hostname")];
             const QString name = params[QStringLiteral("name")];
             const QString login = params[QStringLiteral("login")];
             const QString password = params[QStringLiteral("password")];
 
-            createServer(ServerConn::ConnTLS, name, hostname, login, password, QString());
+            createServer(ServerConn::ConnTLS, name, hostname, login, password);
         } else if (params.contains(QStringLiteral("host_socket_add"))) {
             const QString name = params[QStringLiteral("name")];
 
-            createServer(ServerConn::ConnSocket, name, QStringLiteral("localhost"), QLatin1String(""), QString(), QString());
+            createServer(ServerConn::ConnSocket, name, QStringLiteral("localhost"), QLatin1String(""), QString());
         } else if (params.contains(QStringLiteral("host_edit"))) {
             const int hostId = params[QStringLiteral("host_id")].toInt();
             const QString hostname = params[QStringLiteral("hostname")];
             const QString name = params[QStringLiteral("name")];
             const QString login = params[QStringLiteral("login")];
             const QString password = params[QStringLiteral("password")];
-            const QString vessel = params[QStringLiteral("vessel_name")];
 
-            updateServer(hostId, name, hostname, login, password, vessel);
+            updateServer(hostId, name, hostname, login, password);
         } else if (params.contains(QStringLiteral("host_del"))) {
             const int hostId = params[QStringLiteral("host_id")].toInt();
 
@@ -87,26 +84,25 @@ void Server::index(Context *c)
     c->setStash(QStringLiteral("servers"), QVariant::fromValue(m_virtlyst->servers(c)));
 }
 
-void Server::createServer(int type, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel)
+void Server::createServer(int type, const QString &name, const QString &hostname, const QString &login, const QString &password)
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("INSERT INTO servers_compute "
-                               "(type, name, hostname, login, password, vessel_name) "
+                               "(type, name, hostname, login, password) "
                                "VALUES "
-                               "(:type, :name, :hostname, :login, :password, :vessel)"),
+                               "(:type, :name, :hostname, :login, :password)"),
                 QStringLiteral("virtlyst"));
     query.bindValue(QStringLiteral(":type"), type);
     query.bindValue(QStringLiteral(":name"), name);
     query.bindValue(QStringLiteral(":hostname"), hostname);
     query.bindValue(QStringLiteral(":login"), login);
     query.bindValue(QStringLiteral(":password"), password);
-    query.bindValue(QStringLiteral(":vessel"), vessel);
     if (!query.exec()) {
         qWarning() << "Failed to add connection" << query.lastError().databaseText();
     }
 }
 
-void Server::updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel)
+void Server::updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password)
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("UPDATE servers_compute "
@@ -114,8 +110,7 @@ void Server::updateServer(int id, const QString &name, const QString &hostname, 
                                "name = :name, "
                                "hostname = :hostname, "
                                "login = :login, "
-                               "password = :password, "
-                               "vessel_name = :vessel "
+                               "password = :password "
                                "WHERE id = :id"),
                 QStringLiteral("virtlyst"));
     query.bindValue(QStringLiteral(":id"), id);
@@ -123,7 +118,6 @@ void Server::updateServer(int id, const QString &name, const QString &hostname, 
     query.bindValue(QStringLiteral(":hostname"), hostname);
     query.bindValue(QStringLiteral(":login"), login);
     query.bindValue(QStringLiteral(":password"), password);
-    query.bindValue(QStringLiteral(":vessel"), vessel);
     if (!query.exec()) {
         qWarning() << "Failed to update connection" << query.lastError().databaseText();
     }

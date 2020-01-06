@@ -14,31 +14,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SERVER_H
-#define SERVER_H
-
-#include <QObject>
+#ifndef ROOT_H
+#define ROOT_H
 
 #include <Cutelyst/Controller>
 
 using namespace Cutelyst;
 
 class Virtlyst;
-class Server : public Cutelyst::Controller
+class Root : public Controller
 {
     Q_OBJECT
+    C_NAMESPACE("")
 public:
-    explicit Server(Virtlyst *parent = nullptr);
+    explicit Root(Virtlyst *parent = nullptr);
+    ~Root();
 
     C_ATTR(index, :Path :AutoArgs)
     void index(Context *c);
 
+    C_ATTR(login, :Local :AutoArgs)
+    void login(Context *c);
+
+    C_ATTR(logout, :Local :AutoArgs)
+    void logout(Context *c);
+
+    C_ATTR(defaultPage, :Path)
+    void defaultPage(Context *c);
+
+private Q_SLOTS:
+    bool Auto(Context *c);
+
 private:
-    void createServer(int type, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void deleteServer(int id);
+    C_ATTR(End, :ActionClass("RenderView"))
+    void End(Context *c) { Q_UNUSED(c); }
 
     Virtlyst *m_virtlyst;
 };
 
-#endif // SERVER_H
+#endif //ROOT_H
+

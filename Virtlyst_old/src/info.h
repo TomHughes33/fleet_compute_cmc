@@ -14,31 +14,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SERVER_H
-#define SERVER_H
-
-#include <QObject>
+#ifndef INFO_H
+#define INFO_H
 
 #include <Cutelyst/Controller>
 
 using namespace Cutelyst;
 
 class Virtlyst;
-class Server : public Cutelyst::Controller
+class Info : public Controller
 {
     Q_OBJECT
 public:
-    explicit Server(Virtlyst *parent = nullptr);
+    explicit Info(Virtlyst *parent = nullptr);
 
-    C_ATTR(index, :Path :AutoArgs)
-    void index(Context *c);
+    C_ATTR(hostusage, :Local :AutoArgs)
+    void hostusage(Context *c, const QString &hostId);
+
+    C_ATTR(insts_status, :Local :AutoArgs)
+    void insts_status(Context *c, const QString &hostId);
+
+    C_ATTR(inst_status, :Local :AutoArgs)
+    void inst_status(Context *c, const QString &hostId, const QString &name);
+
+    C_ATTR(instusage, :Local :AutoArgs)
+    void instusage(Context *c, const QString &hostId, const QString &name);
+
+private Q_SLOTS:
+    void End(Context *c) { Q_UNUSED(c); }
 
 private:
-    void createServer(int type, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void deleteServer(int id);
-
     Virtlyst *m_virtlyst;
 };
 
-#endif // SERVER_H
+#endif // INFO_H

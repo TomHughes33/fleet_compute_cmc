@@ -14,31 +14,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SERVER_H
-#define SERVER_H
-
-#include <QObject>
+#ifndef INTERFACES_H
+#define INTERFACES_H
 
 #include <Cutelyst/Controller>
 
 using namespace Cutelyst;
 
 class Virtlyst;
-class Server : public Cutelyst::Controller
+class Interfaces : public Controller
 {
     Q_OBJECT
 public:
-    explicit Server(Virtlyst *parent = nullptr);
+    explicit Interfaces(Virtlyst *parent = nullptr);
 
     C_ATTR(index, :Path :AutoArgs)
-    void index(Context *c);
+    void index(Context *c, const QString &hostId);
+
+    C_ATTR(interface, :Path :AutoArgs)
+    void interface(Context *c, const QString &hostId, const QString &ifaceName);
 
 private:
-    void createServer(int type, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &vessel);
-    void deleteServer(int id);
-
     Virtlyst *m_virtlyst;
 };
 
-#endif // SERVER_H
+#endif // INTERFACES_H

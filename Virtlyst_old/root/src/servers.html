@@ -152,17 +152,8 @@
                                                             <div class="col-sm-6">
                                                                 <input type="hidden" name="host_id" value="{{ host.id }}">
                                                                 <input type="text" name="name" class="form-control"
-                                                                       value="{{ host.name }}" maxlength="40" required
-                                                                       pattern="[a-zA-Z0-9\.\-_]+">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-sm-4 control-label">{% i18n "Vessel" %}</label>
-
-                                                            <div class="col-sm-6">
-                                                                <input type="text" name="vessel" class="form-control"
-                                                                       value="{{ host.vessel }}" maxlength="20" required
-                                                                       pattern="[a-zA-Z0-9\.\-_]+">
+                                                                       value="{{ host.name }}" maxlength="20" required
+                                                                       pattern="[a-z0-9\.\-_]+">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -326,14 +317,6 @@
 
                                 <div class="col-sm-6">
                                     <input type="text" name="name" class="form-control" placeholder="Label Name"
-                                           maxlength="20" required pattern="[a-z0-9\.\-_]+">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">{% i18n "Vessel" %}</label>
-
-                                <div class="col-sm-6">
-                                    <input type="text" name="vessel" class="form-control" placeholder="Vessel Name"
                                            maxlength="20" required pattern="[a-z0-9\.\-_]+">
                                 </div>
                             </div>
