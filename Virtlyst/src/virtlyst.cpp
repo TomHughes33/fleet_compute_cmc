@@ -212,12 +212,12 @@ QString Virtlyst::prettyKibiBytes(quint64 kibiBytes)
 {
     QString ret;
     const char* suffixes[6];
-    suffixes[0] = " KiB";
-    suffixes[1] = " MiB";
-    suffixes[2] = " GiB";
-    suffixes[3] = " TiB";
-    suffixes[4] = " PiB";
-    suffixes[5] = " EiB";
+    suffixes[0] = " KB";
+    suffixes[1] = " MB";
+    suffixes[2] = " GB";
+    suffixes[3] = " TB";
+    suffixes[4] = " PB";
+    suffixes[5] = " EB";
     uint s = 0; // which suffix to use
     double count = kibiBytes;
     while (count >= 1024 && s < 6) {
