@@ -33,6 +33,7 @@ class ServerConn : public QObject
     Q_PROPERTY(QString hostname MEMBER hostname CONSTANT)
     Q_PROPERTY(QString login MEMBER login CONSTANT)
     Q_PROPERTY(QString password MEMBER password CONSTANT)
+    Q_PROPERTY(QString cnumber MEMBER cnumber CONSTANT)
     Q_PROPERTY(int type MEMBER type CONSTANT)
     Q_PROPERTY(int id MEMBER id CONSTANT)
     Q_PROPERTY(bool alive READ alive CONSTANT)
@@ -56,6 +57,7 @@ public:
     QString hostname;
     QString login;
     QString password;
+    QString cnumber;
     int type;
     QUrl url;
     Connection *conn = nullptr;
