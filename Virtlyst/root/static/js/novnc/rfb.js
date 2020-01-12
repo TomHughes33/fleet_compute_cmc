@@ -289,16 +289,24 @@ function constructor() {
 function connect() {
     Util.Debug(">> RFB.connect");
     var uri;
+    var loc_port = location.port;
+    var loc_hostname = location.hostname;
+
+    if(loc_port){
+	loc_port = ":" + loc_port;
+    }
     
     if (typeof UsingSocketIO !== "undefined") {
-        uri = "http://" + rfb_host + ":" + rfb_port + "/" + rfb_path;
+        //uri = "http://" + rfb_host + ":" + rfb_port + "/" + rfb_path;
+	uri = "http://" + loc_hostname + loc_port + "/" + rfb_path;
     } else {
         if (conf.encrypt) {
             uri = "wss://";
         } else {
             uri = "ws://";
         }
-        uri += rfb_host + ":" + rfb_port + "/" + rfb_path;
+        //uri += rfb_host + ":" + rfb_port + "/" + rfb_path;
+	uri += loc_hostname + loc_port + "/" + rfb_path;
     }
     Util.Info("connecting to " + uri);
     // TODO: make protocols a configurable
@@ -464,7 +472,7 @@ updateState = function(state, statusMsg) {
         
         connTimer = setTimeout(function () {
                 fail("Connect timeout");
-            }, conf.connectTimeout * 1000);
+            }, conf.connectTimeout * 1000000);
 
         init_vars();
         connect();
