@@ -75,14 +75,14 @@
                                     </button>
                                 </form>
                                 <p>
+				<p><strong>{% i18n "Customer Number" %}:</strong> {{ host.cnumber }}</p>
                                 <p><strong>{% i18n "Type" %}:</strong> [
                                     {% if host.type == 1 %}TCP
                                     {% elif host.type == 2 %}SSH
                                     {% elif host.type == 3 %}TLS
                                     {% elif host.type == 4 %}SOCKET{% endif %} ]
                                 </p>
-                                <p><strong>{% i18n "Host" %}:</strong> <a
-                                        href="ssh://{{ host.hostname }}" title="{{ host.status }}">{{ host.hostname }}</a></p>
+                                <p><strong>{% i18n "Host" %}:</strong> {{ host.hostname }}</p>
                                 <!-- Modal Edit -->
                                 <div class="modal fade" id="editHost{{ host.id }}" tabindex="-1" role="dialog"
                                      aria-labelledby="editHostLabel" aria-hidden="true">
@@ -147,13 +147,22 @@
                                                         <p class="modal-body">{% i18n "Need create ssh <a href='https://github.com/retspen/webvirtmgr/wiki/Setup-SSH-Authorization'>authorization key</a>. If you have another SSH port on your server, you can add IP:PORT like '192.168.1.1:2222'." %}</p>
 
                                                         <div class="form-group">
-                                                            <label class="col-sm-4 control-label">{% i18n "Label" %}</label>
+                                                            <label class="col-sm-4 control-label">{% i18n "Vessel Name" %}</label>
 
                                                             <div class="col-sm-6">
                                                                 <input type="hidden" name="host_id" value="{{ host.id }}">
                                                                 <input type="text" name="name" class="form-control"
-                                                                       value="{{ host.name }}" maxlength="20" required
-                                                                       pattern="[a-z0-9\.\-_]+">
+                                                                       value="{{ host.name }}" maxlength="40" required
+                                                                       pattern="[a-zA-Z0-9\.\-_ ]+">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-4 control-label">{% i18n "Customer Number" %}</label>
+
+                                                            <div class="col-sm-6">
+                                                                <input type="text" name="cnumber" class="form-control"
+                                                                       value="{{ host.cnumber }}" required
+                                                                       pattern="[a-z0-9\:\.\-_ ]+">
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -313,11 +322,20 @@
                             <p class="modal-body">{% i18n "You must create ssh <a href='https://github.com/retspen/webvirtmgr/wiki/Setup-SSH-Authorization'>authorization key</a>. If you have another SSH port on your server, you can add IP:PORT like '192.168.1.1:2222'." %}</p>
 
                             <div class="form-group">
-                                <label class="col-sm-4 control-label">{% i18n "Label" %}</label>
+                                <label class="col-sm-4 control-label">{% i18n "Vessel Name" %}</label>
 
                                 <div class="col-sm-6">
-                                    <input type="text" name="name" class="form-control" placeholder="Label Name"
-                                           maxlength="20" required pattern="[a-z0-9\.\-_]+">
+                                    <input type="text" name="name" class="form-control" placeholder="Vessel Name"
+                                           maxlength="40" required pattern="[a-zA-Z0-9\.\-_ ]+">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">{% i18n "Customer Number" %}</label>
+
+                                <div class="col-sm-6">
+                                    <input type="text" name="cnumber" class="form-control"
+                                           placeholder="{% i18n "Customer Number" %}" required
+                                           pattern="[a-z0-9\:\.\-_ ]+">
                                 </div>
                             </div>
                             <div class="form-group">

@@ -259,7 +259,7 @@ bool Virtlyst::createDbFlavor(QSqlQuery &query, const QString &label, int memory
 void Virtlyst::updateConnections()
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
-                QStringLiteral("SELECT id, name, hostname, login, password, type FROM servers_compute"),
+                QStringLiteral("SELECT id, name, hostname, login, password, type, customer_number FROM servers_compute"),
                 QStringLiteral("virtlyst"));
     if (!query.exec()) {
         qCWarning(VIRTLYST) << "Failed to get connections list";
@@ -274,12 +274,14 @@ void Virtlyst::updateConnections()
         const QString password = query.value(4).toString();
         int type = query.value(5).toInt();
         ids << id;
+        const QString cnumber = query.value(6).toString();
 
         qDebug() << "id: " << id;
         qDebug() << "name: " << name;
         qDebug() << "hostname: " << hostname;
         qDebug() << "login: " << login;
         qDebug() << "password: " << password;
+        qDebug() << "cnumber: " << cnumber;
 
         ServerConn *server = m_connections.value(id);
         if (server) {
@@ -287,7 +289,8 @@ void Virtlyst::updateConnections()
                     server->hostname == hostname &&
                     server->login == login &&
                     server->password == password &&
-                    server->type == type) {
+                    server->type == type &&
+                    server->cnumber == cnumber) {
                 continue;
             } else {
                 delete server->conn;
@@ -302,6 +305,7 @@ void Virtlyst::updateConnections()
         server->login = login;
         server->password = password;
         server->type = type;
+        server->cnumber = cnumber;
 
         QUrl url;
 	QString host;
@@ -510,6 +514,7 @@ ServerConn *ServerConn::clone(QObject *parent)
     ret->hostname = hostname;
     ret->login = login;
     ret->password = password;
+    ret->cnumber = cnumber;
     ret->type = type;
     ret->url = url;
 
