@@ -34,6 +34,8 @@ public:
     C_ATTR(network, :Path :AutoArgs)
     void network(Context *c, const QString &hostId, const QString &netName);
 
+    static bool defaultNetwork;
+
 private:
     Virtlyst *m_virtlyst;
 };

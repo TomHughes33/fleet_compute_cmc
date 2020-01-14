@@ -28,6 +28,8 @@ Networks::Networks(Virtlyst *parent) : Controller(parent)
 
 }
 
+bool Networks::defaultNetwork = true;
+
 void Networks::index(Context *c, const QString &hostId)
 {
     c->setStash(QStringLiteral("template"), QStringLiteral("networks.html"));
@@ -65,6 +67,21 @@ void Networks::index(Context *c, const QString &hostId)
                                 openvswitch,
                                 fixed);
         }
+    }
+
+    if (Networks::defaultNetwork == true) {
+	qDebug() << "Default network first time";
+	Networks::defaultNetwork = false;
+	const QString name = "corp_bridge";
+	const QString forward = "bridge";
+	const QString nreq = "";
+	const QString bridge = "CORP01";
+	const bool openvswitch = true;
+	const bool dhcp = true;
+	const bool fixed = true;
+	conn->createNetwork(name, forward, nreq, nreq, bridge, dhcp, openvswitch, fixed);
+    } else {
+        qDebug() << "Default network already created once";
     }
 
     const QVector<Network *> networks = conn->networks(0, c);

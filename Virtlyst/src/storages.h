@@ -34,6 +34,8 @@ public:
     C_ATTR(storage, :Path :AutoArgs)
     void storage(Context *c, const QString &hostId, const QString &pool);
 
+    static bool defaultStorage;
+
 private:
     Virtlyst *m_virtlyst;
 };

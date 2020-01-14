@@ -31,8 +31,11 @@ Storages::Storages(Virtlyst *parent) : Controller(parent)
 
 }
 
+bool Storages::defaultStorage = true;
+
 void Storages::index(Context *c, const QString &hostId)
 {
+    qDebug() << "Enter Storages::index:(hostId) " << hostId;
     c->setStash(QStringLiteral("template"), QStringLiteral("storages.html"));
     c->setStash(QStringLiteral("host_id"), hostId);
 
@@ -85,6 +88,18 @@ void Storages::index(Context *c, const QString &hostId)
 
         c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index")), QStringList{ hostId }));
         return;
+    }
+    if (Storages::defaultStorage == true) {
+	qDebug() << "Default storage first time";
+	Storages::defaultStorage = false;
+	const QString name = "iso";
+	const QString type = "dir";
+	const QString source = "";
+	const QString target = "/var/lib/libvirt/images";
+	conn->createStoragePool(name, type, source, target);
+	qDebug() << "Default storage created";
+    } else {
+	qDebug() << "Default storage already created once";
     }
 
     const QVector<StoragePool *> storages = conn->storagePools(0, c);
