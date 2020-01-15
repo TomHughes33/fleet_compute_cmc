@@ -18,7 +18,7 @@ make -f Makefile_cmc publish
 make -f Makefile_cmc add_info_to_dashboard job_result=SUCCESS
 
 # push the tags
-#git push --tags
+git push --tags
 
 # update shore service versions and tag
 #cd ../../
