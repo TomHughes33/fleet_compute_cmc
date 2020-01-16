@@ -23,4 +23,4 @@ make -f Makefile_lmc add_info_to_dashboard job_result=SUCCESS
 # update edge service versions and tag
 #cd ../../
 make -f Makefile_lmc update_service_versions
-make update_version
+make -f Makefile_lmc update_version
