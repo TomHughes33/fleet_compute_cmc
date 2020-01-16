@@ -38,6 +38,9 @@ public:
 
     C_ATTR(change_password, :Local :AutoArgs)
     void change_password(Context *c, const QString &id);
+
+    C_ATTR(delete_user, :Local :AutoArgs)
+    void delete_user(Context *c, const QString &id);
 };
 
 #endif // USERS_H

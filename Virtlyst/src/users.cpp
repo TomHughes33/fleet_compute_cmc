@@ -159,3 +159,18 @@ void Users::change_password(Context *c, const QString &id)
     }
 }
 
+void Users::delete_user(Context *c, const QString &id)
+{
+    const ParamsMultiMap params = c->req()->bodyParameters();
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                 QStringLiteral("DELETE FROM users WHERE id=:id"),
+                 QStringLiteral("virtlyst"));
+    query.bindValue(QStringLiteral(":id"), id);
+    if (query.exec()) {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
+        return;
+    } else {
+        qDebug() << "error users" << query.lastError().text();
+        c->response()->setStatus(Response::InternalServerError);
+    }
+}
