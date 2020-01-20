@@ -7,8 +7,8 @@ changed=$(cicd version changed-components --component ${service}=.)
 
 test -z "${changed}" && exit 0
 
-cur_tag=$(cicd version latest-tag --component ${service}=.)
-new_tag=$(cicd version create-tag --component ${service}=.)
+cur_tag=$(cicd version latest-tag --component ${service})
+new_tag=$(cicd version create-tag --component ${service})
 
 echo "Created new release tag ${new_tag}"
 
