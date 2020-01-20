@@ -84,9 +84,9 @@ publish: image
 
 add_info_to_dashboard:
 	$(RECORD_VER_INFO) \
-                --component $(service) \
-                --version '$(image_ver)' \
-                --job-result '$(job_result)'
+    --component $(service) \
+    --version '$(image_ver)' \
+    --job-result '$(job_result)'
 
 clean:
 	-docker rm -f $(service) virtlyst_build 2>/dev/null
