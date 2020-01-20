@@ -23,5 +23,5 @@ target_link_libraries(Virtlyst
     Qt5::Xml
     ${LIBVIRT_LIBRARIES}
 )
-install(TARGETS Virtlyst DESTINATION ${CMAKE_INSTALL_PREFIX}/Virtlyst )
 
+install(TARGETS Virtlyst DESTINATION Virtlyst )

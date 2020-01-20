@@ -8,20 +8,18 @@ ENV UID=$uid
 
 RUN useradd -M -u $UID builder
 
-#COPY Virtlyst/ /usr/local/src/Virtlyst/
-
+# Install build dependencies
 RUN apt-get update \
-    # Install build dependencies
-    && apt-get install -y git cmake g++ qtbase5-dev libqt5sql5 libqt5sql5-psql libpq-dev libssh-dev libgrantlee5-dev pkg-config libvirt-dev \
-    && cd /usr/local/src \
-    # Build cutelyst
-    && git clone https://github.com/cutelyst/cutelyst.git \
-    && cd cutelyst \
-    && git checkout tags/$CUTELYST_VERSION \
-    && mkdir build && cd build \
-    && export QT_SELECT=qt5 \
-    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DPLUGIN_VIEW_GRANTLEE=on \
-    && make && make install
+  && apt-get install -y git cmake g++ qtbase5-dev libqt5sql5 libqt5sql5-psql libpq-dev libssh-dev libgrantlee5-dev pkg-config libvirt-dev
+
+# Build cutelyst
+RUN git clone https://github.com/cutelyst/cutelyst.git \
+  && cd cutelyst \
+  && git checkout tags/$CUTELYST_VERSION \
+  && mkdir build && cd build \
+  && export QT_SELECT=qt5 \
+  && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DPLUGIN_VIEW_GRANTLEE=on \
+  && make && make install
 
 USER builder
 WORKDIR /Virtlyst

@@ -14,13 +14,14 @@ echo "Created new release tag ${new_tag}"
 
 # build and publish #
 echo "Making release"
-make -f Makefile_lmc publish
-make -f Makefile_lmc add_info_to_dashboard job_result=SUCCESS
+make publish service=$(service)
+make add_info_to_dashboard service=$(service) job_result=SUCCESS
 
-# push the tags 
-#git push --tags
+# push the tags
+git push --tags
 
 # update edge service versions and tag
-#cd ../../
-make -f Makefile_lmc update_service_versions
-#make update_version
+git clone git@github.com:Inmarsat/fleet_compute.git
+cd fleet_compute/edge
+make update_service_versions
+make update_version

@@ -141,23 +141,29 @@ bool Virtlyst::postFork()
 {
     QMutexLocker locker(&mutex);
 
-    //PGconn *con = PQconnectdb("dbname=fleetcompute user=fleetcompute password=fleetcompute hostaddr=172.16.141.142 port=5432");
-    //QPSQLDriver *drv =  new QPSQLDriver(con);
-    //QSqlDatabase db = QSqlDatabase::addDatabase(drv); // becomes the new default connection
-    //auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Cutelyst::Sql::databaseNameThread(QStringLiteral("virtlyst")));
-    auto db_ip = config(QStringLiteral("DatabaseIP")).toString();
-    auto db_user = config(QStringLiteral("DatabaseUser")).toString();
-    auto db_name = config(QStringLiteral("DatabaseName")).toString();
-    auto db_pwd = config(QStringLiteral("DatabasePwd")).toString();	
-    qDebug() << "database ip from config.ini" << db_ip;
-    auto db = QSqlDatabase::addDatabase(QStringLiteral("QPSQL"));
-    db.setUserName(db_user.toStdString().c_str());
-    db.setPassword(db_pwd.toStdString().c_str());
-    db.setDatabaseName(db_name.toStdString().c_str());
-    db.setPort(5432);
-    db.setHostName(db_ip.toStdString().c_str());
-    //db.setHostName("172.17.0.1");
-    //db.setDatabaseName(m_dbPath);
+    auto dbDriver = config(QStringLiteral("DatabaseDriver")).toString();
+    auto db = QSqlDatabase::addDatabase(dbDriver);
+
+    if (dbDriver == "QSQLITE") {
+        db.setDatabaseName(m_dbPath);
+    }
+    else {
+
+        auto db_ip = config(QStringLiteral("DatabaseIP")).toString();
+        auto db_port = config(QStringLiteral("DatabasePort")).toInt();
+        auto db_user = config(QStringLiteral("DatabaseUser")).toString();
+        auto db_name = config(QStringLiteral("DatabaseName")).toString();
+        auto db_pwd = config(QStringLiteral("DatabasePwd")).toString();
+
+        qDebug() << "database endpoint from config.ini" << db_ip << ":" << db_port;
+
+        db.setUserName(db_user.toStdString().c_str());
+        db.setPassword(db_pwd.toStdString().c_str());
+        db.setDatabaseName(db_name.toStdString().c_str());
+        db.setPort(db_port);
+        db.setHostName(db_ip.toStdString().c_str());
+    }
+
     if (!db.open()) {
         qCWarning(VIRTLYST) << "Failed to open database" << db.lastError().databaseText();
         return false;

@@ -47,11 +47,15 @@ find_library(SSH_LIB
 
 file(GLOB_RECURSE TEMPLATES_SRC root/*)
 
-
 add_subdirectory(src)
 
-
-install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/Virtlyst/data)
-install(DIRECTORY root/ DESTINATION ${CMAKE_INSTALL_PREFIX}/Virtlyst/root/)
-install(FILES config.ini DESTINATION ${CMAKE_INSTALL_PREFIX}/Virtlyst/)
+install(DIRECTORY DESTINATION Virtlyst/data)
+install(DIRECTORY root/ DESTINATION Virtlyst/root/)
 install(FILES virtlyst DESTINATION /etc/init.d/)
+
+set(CPACK_PACKAGE_NAME "virtlsy")
+set(CPACK_PACKAGE_CONTACT "Inmarsat")
+set(CPACK_GENERATOR "DEB")
+set(CPACK_INSTALL_PREFIX "/usr/local")
+set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
+include(CPack)
