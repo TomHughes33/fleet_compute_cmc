@@ -3,7 +3,7 @@
 set -e
 
 service=lmc
-changed=$(cicd version changed-components --component ${service}=.)
+changed=$(cicd version changed-components --component ${service})
 
 test -z "${changed}" && exit 0
 
@@ -14,8 +14,8 @@ echo "Created new release tag ${new_tag}"
 
 # build and publish #
 echo "Making release"
-make publish service=$(service)
-make add_info_to_dashboard service=$(service) job_result=SUCCESS
+make publish service=${service}
+make add_info_to_dashboard service=${service} job_result=SUCCESS
 
 # push the tags
 git push --tags
