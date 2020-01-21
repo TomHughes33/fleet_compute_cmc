@@ -3,7 +3,6 @@
 set -e
 
 service=cmc
-branch=$(git rev-parse --abbrev-ref HEAD)
 changed=$(cicd version changed-components --component ${service}=.)
 
 test -z "${changed}" && exit 0
@@ -21,11 +20,15 @@ make add_info_to_dashboard service=${service} job_result=SUCCESS
 # push the tags
 git push --tags
 
+# get the version
+branch=$(git rev-parse --abbrev-ref HEAD)
+version=$(echo ${new_tag} | sed -e 's/cmc//').0-${branch}
+
 # update shore service versions and tag
 echo "Making a shore release"
 git clone git@github.com:Inmarsat/fleet_compute.git
 cd fleet_compute
-sed -i "/version_cmc/c\version_${service}: ${new_tag}.0-${branch}" shore/provisioning/service_versions.yaml
+sed -i "/version_cmc/c\version_${service}: ${version}" shore/provisioning/service_versions.yaml
 if ! git diff --exit-code -- shore/provisioning/service_versions.yaml; then
     git add shore/provisioning/service_versions.yaml
     git commit -m "Auto update Shore service version file"
