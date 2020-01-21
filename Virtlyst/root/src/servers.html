@@ -233,6 +233,25 @@
                                                                     name="host_tls_add">{% i18n "Add" %}</button>
                                                         </div>
                                                     </form>
+                                                {% elif host.type == 4 %}
+                                                    <form class="form-horizontal" method="post" role="form">{{ csrf_token }}
+                                                        <div class="form-group">
+                                                            <label class="col-sm-4 control-label">{% i18n "Label" %}</label>
+
+                                                            <div class="col-sm-6">
+                                                                <input type="hidden" name="host_id" value="{{ host.id }}">
+                                                                <input type="text" name="name" class="form-control"
+								    placeholder="Label Name" maxlength="20"
+				                                    required pattern="[a-z0-9\.\-_]+">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default"
+                                                                data-dismiss="modal">{% i18n "Close" %}</button>
+                                                            <button type="submit" class="btn btn-primary"
+                                                                name="host_sock_edit">{% i18n "Save" %}</button>
+                                                        </div>
+                                                    </form>
                                                 {% endif %}
                                             </div>
                                         </div>
