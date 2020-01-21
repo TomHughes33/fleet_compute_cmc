@@ -26,14 +26,14 @@ git clone git@github.com:Inmarsat/fleet_compute.git
 cd fleet_compute
 sed -i "/version_cmc/c\version_${service}: ${new_tag}" shore/provisioning/service_versions.yaml
 if ! git diff --exit-code -- shore/provisioning/service_versions.yaml; then
-    git add shore/provisioning/service_versions.yaml;
-    git commit -m "Auto update Shore service version file";
-    i=0;
+    git add shore/provisioning/service_versions.yaml
+    git commit -m "Auto update Shore service version file"
+    i=0
     while [ $i -lt 5 ] && ! git push origin master;
     do
-        i=$((i+1));
-        git pull origin master;
-    done;
+        i=$((i+1))
+        git pull origin master
+    done
 fi
 cicd version create-tag --only-if-necessary
 git push --tags
