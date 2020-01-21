@@ -29,9 +29,9 @@ if ! git diff --exit-code -- shore/provisioning/service_versions.yaml; then
     git add shore/provisioning/service_versions.yaml;
     git commit -m "Auto update Shore service version file";
     i=0;
-    while [ $$i -lt 5 ] && ! git push origin master;
+    while [ $i -lt 5 ] && ! git push origin master;
     do
-        i=$$((i+1));
+        i=$((i+1));
         git pull origin master;
     done;
 fi
