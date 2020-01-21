@@ -24,7 +24,7 @@ git push --tags
 echo "Making a shore release"
 git clone git@github.com:Inmarsat/fleet_compute.git
 cd fleet_compute
-sed -i "/version_cmc/c\version_${service}: $(new_tag)" shore/provisioning/service_versions.yaml
+sed -i "/version_cmc/c\version_${service}: ${new_tag}" shore/provisioning/service_versions.yaml
 if ! git diff --exit-code -- shore/provisioning/service_versions.yaml; then
     git add shore/provisioning/service_versions.yaml;
     git commit -m "Auto update Shore service version file";
