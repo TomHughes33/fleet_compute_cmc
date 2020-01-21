@@ -22,7 +22,7 @@ git push --tags
 
 # get the version
 branch=$(git rev-parse --abbrev-ref HEAD)
-version=$(echo ${new_tag} | sed -e 's/cmc//').0-${branch}
+version=$(echo ${new_tag} | sed -e 's/cmc-//').0-${branch}
 
 # update shore service versions and tag
 echo "Making a shore release"
