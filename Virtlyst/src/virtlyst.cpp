@@ -282,12 +282,12 @@ void Virtlyst::updateConnections()
         ids << id;
         const QString cnumber = query.value(6).toString();
 
-        qDebug() << "id: " << id;
+        /*qDebug() << "id: " << id;
         qDebug() << "name: " << name;
         qDebug() << "hostname: " << hostname;
         qDebug() << "login: " << login;
         qDebug() << "password: " << password;
-        qDebug() << "cnumber: " << cnumber;
+        qDebug() << "cnumber: " << cnumber;*/
 
         ServerConn *server = m_connections.value(id);
         if (server) {
@@ -338,10 +338,10 @@ void Virtlyst::updateConnections()
             url.setUserName(login);
 
 	    //Execute command to avoid known host issue for new corp IP
-            qDebug() << "Before known host cmd ";
+            //qDebug() << "Before known host cmd ";
             sshcmd = "ssh-keygen -f /root/.ssh/known_hosts -R [" + host + "]:50022";
             QProcess::execute (sshcmd);
-            qDebug() << "After known host cmd ";
+            //qDebug() << "After known host cmd ";
             break;
         case ServerConn::ConnTCP:
             url = QStringLiteral("qemu+tcp:///system");
