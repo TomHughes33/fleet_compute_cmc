@@ -265,16 +265,20 @@
                 </div>
                 <div class="tabbable">
                     <ul class="nav nav-tabs">
-                        <li class="active">
+                        <!-- <li class="active">
                             <a href="#1" data-toggle="tab">{% i18n "TCP Connection" %}</a>
                         </li>
                         <li><a href="#2" data-toggle="tab">{% i18n "SSH Connection" %}</a></li>
                         <li><a href="#3" data-toggle="tab">{% i18n "TLS Connection" %}</a></li>
                         <li><a href="#4" data-toggle="tab">{% i18n "Local Socket" %}</a></li>
+			-->
+			<li class="active">
+                               <a href="#2" data-toggle="tab">{% i18n "SSH Connection" %}</a>
+                       </li>
                     </ul>
                 </div>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="1">
+                    <div class="tab-pane" id="1">
                         <form class="form-horizontal" method="post" role="form">{{ csrf_token }}
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{% i18n "Label" %}</label>
@@ -317,9 +321,9 @@
                             </div>
                         </form>
                     </div>
-                    <div class="tab-pane" id="2">
+                    <div class="tab-pane active" id="2">
                         <form class="form-horizontal" method="post" role="form">{{ csrf_token }}
-                            <p class="modal-body">{% i18n "You must create ssh <a href='https://github.com/retspen/webvirtmgr/wiki/Setup-SSH-Authorization'>authorization key</a>. If you have another SSH port on your server, you can add IP:PORT like '192.168.1.1:2222'." %}</p>
+                            <p class="modal-body">{% i18n "You must create an SSH connection as follows: <a href='https://github.com/retspen/webvirtmgr/wiki/Setup-SSH-Authorization'>authorization key</a>. If you have another SSH port on your server, you can add an IP:PORT as follows '192.168.1.1:2222'." %}</p>
 
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{% i18n "Vessel Name" %}</label>
