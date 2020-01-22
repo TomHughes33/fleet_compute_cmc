@@ -74,6 +74,11 @@ void Server::index(Context *c)
             const QString cnumber = params[QStringLiteral("cnumber")];
 
             updateServer(hostId, name, hostname, login, password, cnumber);
+        } else if (params.contains(QStringLiteral("host_sock_edit"))) {
+            const int hostId = params[QStringLiteral("host_id")].toInt();
+            const QString name = params[QStringLiteral("name")];
+
+            updateServer(hostId, name, QStringLiteral("localhost"), QLatin1String(""), QString(), QString());
         } else if (params.contains(QStringLiteral("host_del"))) {
             const int hostId = params[QStringLiteral("host_id")].toInt();
 
