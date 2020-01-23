@@ -88,14 +88,14 @@ public:
 
     void updateConnections();
 
-    bool checkSSHconnection(QString &host, int port);
-
 private:
     bool createDB();
 
     QMap<QString, ServerConn *> m_connections;
     QString m_dbPath;
 };
+
+bool checkSSHconnection(QString &host, int port);
 
 #endif //VIRTLYST_H
 
