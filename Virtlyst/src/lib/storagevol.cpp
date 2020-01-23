@@ -123,6 +123,11 @@ StorageVol *StorageVol::clone(const QString &name, const QString &format, int fl
     stream.writeStartElement(QStringLiteral("format"));
     stream.writeAttribute(QStringLiteral("type"), localFormat);
     stream.writeEndElement(); // format
+    stream.writeStartElement(QStringLiteral("permissions"));
+    stream.writeTextElement(QStringLiteral("mode"), QString::number(644));
+    stream.writeTextElement(QStringLiteral("owner"), QString::number(1000));
+    stream.writeTextElement(QStringLiteral("group"), QString::number(36));
+    stream.writeEndElement(); // permissions
     stream.writeEndElement(); // target
 
     stream.writeEndElement(); // volume
