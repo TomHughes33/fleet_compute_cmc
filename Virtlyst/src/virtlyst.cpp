@@ -195,6 +195,8 @@ QVector<ServerConn *> Virtlyst::servers(QObject *parent)
 
 Connection *Virtlyst::connection(const QString &id, QObject *parent)
 {
+    QString host;
+    int port;
     ServerConn *server = m_connections.value(id);
     if (server && server->conn && server->conn->isAlive()) {
         return server->conn->clone(parent);
@@ -202,10 +204,27 @@ Connection *Virtlyst::connection(const QString &id, QObject *parent)
         if (server->conn) {
             delete server->conn;
         }
-
-        server->conn = server->isonline()
-          ? new Connection(server->url, server->name, server)
-          : nullptr;
+        const QString hostname = server->url.host();
+        if (hostname.contains(':')) {
+            QRegExp separator(":");
+            QStringList list = hostname.split(separator);
+            host = list.at(0);
+            port = list.at(1).toInt();
+        } else {
+            host = hostname;
+            port = 22;
+        }
+        if(server->type == ServerConn::ConnSSH) {
+	    if(checkSSHconnection(host, port)){
+                server->conn = server->isonline()
+                  ? new Connection(server->url, server->name, server)
+                  : nullptr;
+	    }
+	} else {
+            server->conn = server->isonline()
+              ? new Connection(server->url, server->name, server)
+              : nullptr;
+	}
         if (server->conn && server->conn->isAlive()) {
             return server->conn->clone(parent);
         }
@@ -524,16 +543,33 @@ ServerConn *ServerConn::clone(QObject *parent)
     ret->type = type;
     ret->url = url;
 
+    QString host;
+    int port;
+    if (hostname.contains(':')) {
+        QRegExp separator(":");
+        QStringList list = hostname.split(separator);
+        host = list.at(0);
+        port = list.at(1).toInt();
+    } else {
+        host = hostname;
+        port = 22;
+    }
     if (ret->isonline() && conn && !conn->isAlive()) {
         delete conn;
-        conn = new Connection(url, name, this);
+        if(type == ServerConn::ConnSSH) {
+            if(checkSSHconnection(host, port)){
+                conn = new Connection(url, name, this);
+            }
+        } else {
+            conn = new Connection(url, name, this);
+        }
     }
     ret->conn = conn ? conn->clone(ret) : nullptr;
 
     return ret;
 }
 
-bool Virtlyst::checkSSHconnection(QString &host, int port)
+bool checkSSHconnection(QString &host, int port)
 {
   ssh_session my_ssh_session;
   int rc;
