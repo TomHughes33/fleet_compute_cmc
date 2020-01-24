@@ -100,8 +100,12 @@ bool Users::find(const QString &username)
     }
 
     query.next();
-    if (query.value(0).toInt() > 0)
+	            qDebug() << "after query next";
+    if (query.value(0).toInt() > 0){
+	            qDebug() << "inside query next returning true";
+
         return true;
+    }
     else
         return false;
 }
