@@ -43,5 +43,7 @@ public:
     void delete_user(Context *c, const QString &id);
 };
 
+bool Users::find(const QString &username);
+
 #endif // USERS_H
 

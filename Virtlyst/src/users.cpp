@@ -58,7 +58,7 @@ void Users::create(Context *c)
             c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password too short"));
             return;
         }
-	if (!find( QStringLiteral("username"))) {
+	if (!find(QStringLiteral("username"))) {
 	        const QString pass = CredentialPassword::createPassword(password);
 
         	QSqlQuery query = CPreparedSqlQueryThreadForDB(
