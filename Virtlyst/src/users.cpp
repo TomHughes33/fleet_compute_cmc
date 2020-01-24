@@ -58,7 +58,7 @@ void Users::create(Context *c)
             c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password too short"));
             return;
         }
-	if (!find(params.value(QStringLiteral("username")))) {
+	if (!find(params.value(QStringLiteral("username"))), -1) {
 	        const QString pass = CredentialPassword::createPassword(password);
 
         	QSqlQuery query = CPreparedSqlQueryThreadForDB(
@@ -86,14 +86,23 @@ void Users::create(Context *c)
                 });
 }
 
-bool Users::find(const QString &username)
+bool Users::find(const QString &username, const QString &id)
 {
-	            qDebug() << "username" << username;
-	QSqlQuery query = CPreparedSqlQueryThreadForDB(
+	QSqlQuery query;
+	if (id < 0 ){
+		query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("select count(*) from users"
                                    " where "
                                    "username=:username"),
                     QStringLiteral("virtlyst"));
+	}else {
+		query = CPreparedSqlQueryThreadForDB(
+                    QStringLiteral("select count(*) from users"
+                                   " where "
+                                   "username=:username and id !=:id"),
+                    QStringLiteral("virtlyst"));
+	        query.bindValue(QStringLiteral(":id"), id);
+	}
 	        query.bindValue(QStringLiteral(":username"), username);
     
     if (!query.exec()) {
@@ -101,10 +110,7 @@ bool Users::find(const QString &username)
     }
 
     query.next();
-	            qDebug() << "after query next";
     if (query.value(0).toInt() > 0){
-	            qDebug() << "inside query next returning true";
-
         return true;
     }
     else
@@ -115,21 +121,26 @@ void Users::edit(Context *c, const QString &id)
 {
     if (c->request()->isPost()) {
         const ParamsMultiMap params = c->req()->bodyParameters();
-        QSqlQuery query = CPreparedSqlQueryThreadForDB(
+	if (!find(params.value(QStringLiteral("username"))), id) {
+        	QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("UPDATE users "
                                    "SET "
                                    "username=:username "
                                    "WHERE id=:id"),
                     QStringLiteral("virtlyst"));
-        query.bindValue(QStringLiteral(":username"), params.value(QStringLiteral("username")));
-        query.bindValue(QStringLiteral(":id"), id);
-        if (query.exec()) {
-            c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
-            return;
-        } else {
-            qDebug() << "error users" << query.lastError().text();
-            c->response()->setStatus(Response::InternalServerError);
-        }
+	        query.bindValue(QStringLiteral(":username"), params.value(QStringLiteral("username")));
+        	query.bindValue(QStringLiteral(":id"), id);
+	        if (query.exec()) {
+        	    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
+	            return;
+	        } else {
+        	    qDebug() << "error users" << query.lastError().text();
+	            c->response()->setStatus(Response::InternalServerError);
+	        }
+	}else {
+		c->setStash(QStringLiteral("error_msg"), QStringLiteral("The username attempted already exists. Please try again with a different username"));
+                 return;	
+	}
     } else {
         QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("SELECT username "
