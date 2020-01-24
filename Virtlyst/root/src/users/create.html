@@ -1,18 +1,36 @@
 {% extends "base.html" %}
-{% block title %}{% i18n "Create User" %}{% endblock %}
-
-{% block content %}
-<form method="post" onsubmit="return checkPassword(this)">
-  <div class="form-group">
-    <label for="username">Username</label>
-    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required autocomplete="username">
-  </div>
-  {% if not user_edit %}
-  <div class="form-group">
-    <label for="password">Password</label>
-    <input type="password" class="form-control" id="password" name="password" required>
-  </div>
-  {% endif %}
-  <button type="submit" class="btn btn-primary">{% if user_edit %}Edit{% else %}Create{% endif %}</button>
-</form>
+{% block title %}
+{% if not user_edit %}
+        {% i18n "Create User" %}
+{% else %}
+        {% i18n "Edit User" %}
+{% endif %}
 {% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+	<form class="form-signin" method="post" onsubmit="return checkPassword(this)">
+	<h2 class="modal-title">
+	    {% if not user_edit %}
+	        {% i18n "Create User" %}
+	    {% else %}
+               {% i18n "Edit User" %}
+	    {% endif %}
+	</h2>
+	  <div>
+	    <label for="username">Username</label>
+	    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required autocomplete="username">
+	  </div>
+	  {% if not user_edit %}
+	  <div>
+	    <label for="password">Password</label>
+	    <input type="password" class="form-control" id="password" name="password" required>
+	  </div>
+	  {% endif %}
+	  <div class="form-model-footer">
+	  <button type="submit" class="btn btn-primary">{% if user_edit %}Edit{% else %}Create{% endif %}</button>
+	  </div>
+	</form>
+{% endblock %}
+	</div>
+</div>
