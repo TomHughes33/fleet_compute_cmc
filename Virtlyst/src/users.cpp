@@ -58,27 +58,52 @@ void Users::create(Context *c)
             c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password too short"));
             return;
         }
-        const QString pass = CredentialPassword::createPassword(password);
+	if (!find(c, params.value(QStringLiteral("username")))) {
+	        const QString pass = CredentialPassword::createPassword(password);
 
-        QSqlQuery query = CPreparedSqlQueryThreadForDB(
+        	QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("INSERT INTO users "
                                    "(username, password) "
                                    "VALUES "
                                    "(:username, :password) "),
                     QStringLiteral("virtlyst"));
-        query.bindValue(QStringLiteral(":username"), params.value(QStringLiteral("username")));
-        query.bindValue(QStringLiteral(":password"), pass);
-        if (query.exec()) {
-            c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
-            return;
-        } else {
-            qDebug() << "error create user" << query.lastError().text();
-            c->response()->setStatus(Response::InternalServerError);
-        }
+	        query.bindValue(QStringLiteral(":username"), params.value(QStringLiteral("username")));
+	        query.bindValue(QStringLiteral(":password"), pass);
+	        if (query.exec()) {
+	            c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
+	            return;
+	        } else {
+	            qDebug() << "error create user" << query.lastError().text();
+	            c->response()->setStatus(Response::InternalServerError);
+	        }
+	}else{
+		 c->setStash(QStringLiteral("error_msg"), QStringLiteral("The username attempted already exists. Please try again with a different username"));
+		 return;
+	}		
     }
     c->setStash(QStringLiteral("user"), ParamsMultiMap{
                     {QStringLiteral("active"), QStringLiteral("on")},
                 });
+}
+
+bool Users::find(Context *c,const QString &username)
+{
+	QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                    QStringLiteral("select count(*) from users"
+                                   " where "
+                                   "username=:username"),
+                    QStringLiteral("virtlyst"));
+	        query.bindValue(QStringLiteral(":username"), username);
+    
+    if (!query.exec()) {
+        qWarning() << "Failed to get count" << query.lastError().databaseText();
+    }
+
+    query.next();
+    if (query.value(0).toInt() > 0)
+        return true;
+    else
+        return false;
 }
 
 void Users::edit(Context *c, const QString &id)
