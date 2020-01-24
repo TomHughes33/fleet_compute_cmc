@@ -43,7 +43,7 @@ public:
     void delete_user(Context *c, const QString &id);
 
     C_ATTR(find, :Local :AutoArgs)
-    bool find(const QString &username);
+    bool find(const QString &username, const QString &id);
 };
 
 
