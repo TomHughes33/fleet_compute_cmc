@@ -121,7 +121,7 @@ void Users::edit(Context *c, const QString &id)
 {
     if (c->request()->isPost()) {
         const ParamsMultiMap params = c->req()->bodyParameters();
-	if (!find(params.value(QStringLiteral("username"))), id) {
+	if (!find(params.value(QStringLiteral("username")),id)) {
         	QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("UPDATE users "
                                    "SET "
