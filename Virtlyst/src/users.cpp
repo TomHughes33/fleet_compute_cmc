@@ -141,16 +141,16 @@ void Users::edit(Context *c, const QString &id)
 	}else {
 		c->setStash(QStringLiteral("error_msg"), QStringLiteral("The username attempted already exists. Please try again with a different username"));
 		qDebug() << "Edit id :: " << id;
-		getUserById(id);
+		getUserById(c, id);
 	}
     } else {
-	getUserById(id);
+	getUserById(c, id);
     }
     c->setStash(QStringLiteral("user_edit"), true);
     c->setStash(QStringLiteral("template"), QStringLiteral("users/create.html"));
 }
 
-void Users::getUserById(const QString &id)
+void Users::getUserById(Context *c, const QString &id)
 {
    QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("SELECT username "

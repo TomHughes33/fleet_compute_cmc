@@ -46,7 +46,7 @@ public:
     bool find(const QString &username, const QString &id);
 
     C_ATTR(getUserById, :Local :AutoArgs)
-    void getUserById(const QString &id);
+    void getUserById(Context *c, const QString &id);
 };
 
 
