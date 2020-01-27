@@ -119,7 +119,6 @@ bool Users::find(const QString &username, const QString &id)
 
 void Users::edit(Context *c, const QString &id)
 {
-    qDebug() << "ID: " + id;
     if (c->request()->isPost()) {
         const ParamsMultiMap params = c->req()->bodyParameters();
 	if (!find(params.value(QStringLiteral("username")),id)) {
@@ -140,7 +139,6 @@ void Users::edit(Context *c, const QString &id)
 	        }
 	}else {
 		c->setStash(QStringLiteral("error_msg"), QStringLiteral("The username attempted already exists. Please try again with a different username"));
-		qDebug() << "Edit id :: " << id;
 		getUserById(c, id);
 	}
     } else {
