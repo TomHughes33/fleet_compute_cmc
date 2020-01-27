@@ -104,7 +104,8 @@ bool Users::find(const QString &username, const QString &id)
 	        query.bindValue(QStringLiteral(":id"), id);
 	}
 	        query.bindValue(QStringLiteral(":username"), username);
-    
+   
+    qWarning() << "QSqlQuery --"  << query.toString();	
     if (!query.exec()) {
         qWarning() << "Failed to get count" << query.lastError().databaseText();
     }
@@ -139,7 +140,7 @@ void Users::edit(Context *c, const QString &id)
 	        }
 	}else {
 		c->setStash(QStringLiteral("error_msg"), QStringLiteral("The username attempted already exists. Please try again with a different username"));
-                 return;	
+                // return;	
 	}
     } else {
         QSqlQuery query = CPreparedSqlQueryThreadForDB(
