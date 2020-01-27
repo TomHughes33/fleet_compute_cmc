@@ -140,26 +140,30 @@ void Users::edit(Context *c, const QString &id)
 	        }
 	}else {
 		c->setStash(QStringLiteral("error_msg"), QStringLiteral("The username attempted already exists. Please try again with a different username"));
-		qDebug() << "username :: " << params.value(QStringLiteral("username"));
-		c->setStash(QStringLiteral("username"),params.value(QStringLiteral("username")));
-                // return;	
+		qDebug() << "Edit id :: " << id;
+		getUserById(id);
 	}
     } else {
-        QSqlQuery query = CPreparedSqlQueryThreadForDB(
+	getUserById(id);
+    }
+    c->setStash(QStringLiteral("user_edit"), true);
+    c->setStash(QStringLiteral("template"), QStringLiteral("users/create.html"));
+}
+
+void Users::getUserById(const QString &id)
+{
+   QSqlQuery query = CPreparedSqlQueryThreadForDB(
                     QStringLiteral("SELECT username "
                                    "FROM users "
                                    "WHERE id=:id"),
                     QStringLiteral("virtlyst"));
-        query.bindValue(QStringLiteral(":id"), id);
-        if (query.exec()) {
-            c->setStash(QStringLiteral("user"), Sql::queryToHashObject(query));
-        } else {
-            qDebug() << "error users" << query.lastError().text();
-            c->response()->setStatus(Response::InternalServerError);
-        }
-    }
-    c->setStash(QStringLiteral("user_edit"), true);
-    c->setStash(QStringLiteral("template"), QStringLiteral("users/create.html"));
+   query.bindValue(QStringLiteral(":id"), id);
+   if (query.exec()) {
+       c->setStash(QStringLiteral("user"), Sql::queryToHashObject(query));
+   } else {
+       qDebug() << "error users" << query.lastError().text();
+       c->response()->setStatus(Response::InternalServerError);
+   }
 }
 
 void Users::change_password(Context *c, const QString &id)
