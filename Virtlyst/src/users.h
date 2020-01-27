@@ -41,7 +41,14 @@ public:
 
     C_ATTR(delete_user, :Local :AutoArgs)
     void delete_user(Context *c, const QString &id);
+
+    C_ATTR(find, :Local :AutoArgs)
+    bool find(const QString &username, const QString &id);
+
+    C_ATTR(getUserById, :Local :AutoArgs)
+    void getUserById(Context *c, const QString &id);
 };
+
 
 #endif // USERS_H
 
