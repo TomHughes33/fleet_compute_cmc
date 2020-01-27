@@ -105,7 +105,7 @@ bool Users::find(const QString &username, const QString &id)
 	}
 	        query.bindValue(QStringLiteral(":username"), username);
    
-    qWarning() << "QSqlQuery --"  << query.toString();	
+    qWarning() << "QSqlQuery --"  << query;	
     if (!query.exec()) {
         qWarning() << "Failed to get count" << query.lastError().databaseText();
     }
