@@ -140,6 +140,8 @@ void Users::edit(Context *c, const QString &id)
 	        }
 	}else {
 		c->setStash(QStringLiteral("error_msg"), QStringLiteral("The username attempted already exists. Please try again with a different username"));
+		qDebug() << "username" << params.value(QStringLiteral("username"));
+		c->setStash(QStringLiteral("username"),params.value(QStringLiteral("username")));
                 // return;	
 	}
     } else {
