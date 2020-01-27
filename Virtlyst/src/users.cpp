@@ -119,7 +119,7 @@ bool Users::find(const QString &username, const QString &id)
 
 void Users::edit(Context *c, const QString &id)
 {
-    qWarning() << "ID: " + id;
+    qDebug() << "ID: " + id;
     if (c->request()->isPost()) {
         const ParamsMultiMap params = c->req()->bodyParameters();
 	if (!find(params.value(QStringLiteral("username")),id)) {
