@@ -44,6 +44,9 @@ public:
 
     C_ATTR(find, :Local :AutoArgs)
     bool find(const QString &username, const QString &id);
+
+    C_ATTR(getUserById, :Local :AutoArgs)
+    void getUserById(const QString &id)
 };
 
 
