@@ -60,7 +60,7 @@
                                     </h3>
 				{% else %}
                                     <h3 class="panel-title">
-                                        <a href="/instances/{{ host.id }}" onclick="return alert('{% i18n "Connection is offline, will now try to establish the connection" %}')"><strong>{{ host.name }}</strong></a>
+                                        <a href="/instances/{{ host.id }}" onclick="return alert('{% i18n "Connection is offline, trying to establish the connection" %}')"><strong>{{ host.name }}</strong></a>
                                         <a data-toggle="modal" href="#editHost{{ host.id }}" class="pull-right"
                                            title="{% i18n "Edit" %}">
                                             <span class="glyphicon glyphicon-pencil"></span>
