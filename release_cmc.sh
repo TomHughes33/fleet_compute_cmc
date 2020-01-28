@@ -20,7 +20,7 @@ make add_info_to_dashboard service=${service} job_result=SUCCESS
 # push the tags #
 git push --tags
 
-# get the version
+# get the version #
 branch=$(git rev-parse --abbrev-ref HEAD)
 version=$(echo ${new_tag} | sed -e 's/cmc-//').0-${branch}
 
