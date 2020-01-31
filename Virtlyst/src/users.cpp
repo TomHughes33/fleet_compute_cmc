@@ -24,8 +24,12 @@
 
 #include <QSqlQuery>
 #include <QSqlError>
+#include <regex>
+#include <iostream>
+#include <string>
 
 using namespace Cutelyst;
+using namespace std;
 
 Users::Users(QObject *parent)
     : Controller(parent)
@@ -58,6 +62,15 @@ void Users::create(Context *c)
             c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password too short"));
             return;
         }
+	else {
+            regex pwdRegex("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\\s).{10,}$"); 
+
+            if ( !regex_match(password.toStdString(), pwdRegex) ) {
+                c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password must contain at least one lowercase letter, one uppercase letter, one numeric digit, one special character, and at least 10 or more characters"));
+                return;
+	    }
+	}
+
 	if (!find(params.value(QStringLiteral("username")),"-1")) {
 	        const QString pass = CredentialPassword::createPassword(password);
 
@@ -168,11 +181,20 @@ void Users::change_password(Context *c, const QString &id)
 {
     if (c->request()->isPost()) {
         const ParamsMultiMap params = c->req()->bodyParameters();
+        c->setStash(QStringLiteral("change_password"), params);
         const QString password = params[QStringLiteral("password")];
         if (password != params[QStringLiteral("password_conf")]) {
             c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password confirmation does not match"));
             return;
         }
+	else {
+            regex pwdRegex("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\\s).{10,}$"); 
+
+            if ( !regex_match(password.toStdString(), pwdRegex) ) {
+                c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password must contain at least one lowercase letter, one uppercase letter, one numeric digit, one special character, and at least 10 or more characters"));
+                return;
+	    }
+	}
         const QString pass = CredentialPassword::createPassword(password);
 
         QSqlQuery query = CPreparedSqlQueryThreadForDB(
