@@ -21,6 +21,7 @@
 #include <Cutelyst/Plugins/StatusMessage>
 #include <Cutelyst/Plugins/Session/Session>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
+#include <Cutelyst/Plugins/Authentication/credentialhttp.h>
 #include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
 #include <grantlee/engine.h>
 #include <postgresql/libpq-fe.h>
@@ -127,10 +128,16 @@ bool Virtlyst::init()
 
     auto realm = new AuthenticationRealm(store, password);
 
+    auto basic = new CredentialHttp;
+    basic->setType(CredentialHttp::Basic);
+    basic->setPasswordType(CredentialHttp::Hashed);
+    auto realm2 = new AuthenticationRealm(store, basic, "HTTP");
+
     new Session(this);
 
     auto auth = new Authentication(this);
     auth->addRealm(realm);
+    auth->addRealm(realm2);
 
     new StatusMessage(this);
 
@@ -301,12 +308,12 @@ void Virtlyst::updateConnections()
         ids << id;
         const QString cnumber = query.value(6).toString();
 
-        /*qDebug() << "id: " << id;
+        qDebug() << "id: " << id;
         qDebug() << "name: " << name;
         qDebug() << "hostname: " << hostname;
         qDebug() << "login: " << login;
         qDebug() << "password: " << password;
-        qDebug() << "cnumber: " << cnumber;*/
+        qDebug() << "cnumber: " << cnumber;
 
         ServerConn *server = m_connections.value(id);
         if (server) {
@@ -322,7 +329,7 @@ void Virtlyst::updateConnections()
             }
         } else {
             server = new ServerConn(this);
-            server->id = id.toInt();
+            server->id = id;
         }
 
         server->name = name;

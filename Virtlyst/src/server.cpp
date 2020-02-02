@@ -66,7 +66,7 @@ void Server::index(Context *c)
 
             createServer(ServerConn::ConnSocket, name, QStringLiteral("localhost"), QLatin1String(""), QString(), QString());
         } else if (params.contains(QStringLiteral("host_edit"))) {
-            const int hostId = params[QStringLiteral("host_id")].toInt();
+            const QString hostId = params[QStringLiteral("host_id")];
             const QString hostname = params[QStringLiteral("hostname")];
             const QString name = params[QStringLiteral("name")];
             const QString login = params[QStringLiteral("login")];
@@ -75,12 +75,12 @@ void Server::index(Context *c)
 
             updateServer(hostId, name, hostname, login, password, cnumber);
         } else if (params.contains(QStringLiteral("host_sock_edit"))) {
-            const int hostId = params[QStringLiteral("host_id")].toInt();
+            const QString hostId = params[QStringLiteral("host_id")];
             const QString name = params[QStringLiteral("name")];
 
             updateServer(hostId, name, QStringLiteral("localhost"), QLatin1String(""), QString(), QString());
         } else if (params.contains(QStringLiteral("host_del"))) {
-            const int hostId = params[QStringLiteral("host_id")].toInt();
+            const QString hostId = params[QStringLiteral("host_id")];
 
             deleteServer(hostId);
         }
@@ -110,7 +110,7 @@ void Server::createServer(int type, const QString &name, const QString &hostname
     }
 }
 
-void Server::updateServer(int id, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &cnumber)
+void Server::updateServer(const QString &id, const QString &name, const QString &hostname, const QString &login, const QString &password, const QString &cnumber)
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("UPDATE servers_compute "
@@ -133,7 +133,7 @@ void Server::updateServer(int id, const QString &name, const QString &hostname, 
     }
 }
 
-void Server::deleteServer(int id)
+void Server::deleteServer(const QString &id)
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("DELETE FROM servers_compute WHERE id = :id"),

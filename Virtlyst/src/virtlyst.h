@@ -35,7 +35,7 @@ class ServerConn : public QObject
     Q_PROPERTY(QString password MEMBER password CONSTANT)
     Q_PROPERTY(QString cnumber MEMBER cnumber CONSTANT)
     Q_PROPERTY(int type MEMBER type CONSTANT)
-    Q_PROPERTY(int id MEMBER id CONSTANT)
+    Q_PROPERTY(QString id MEMBER id CONSTANT)
     Q_PROPERTY(bool alive READ alive CONSTANT)
     Q_PROPERTY(bool isonline READ isonline CONSTANT)
 public:
@@ -52,7 +52,7 @@ public:
     bool isonline();
     ServerConn *clone(QObject *parent);
 
-    int id;
+    QString id;
     QString name;
     QString hostname;
     QString login;

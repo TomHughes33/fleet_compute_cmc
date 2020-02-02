@@ -53,7 +53,7 @@ install(DIRECTORY DESTINATION Virtlyst/data)
 install(DIRECTORY root/ DESTINATION Virtlyst/root/)
 install(FILES virtlyst DESTINATION /etc/init.d/)
 
-set(CPACK_PACKAGE_NAME "virtlsy")
+set(CPACK_PACKAGE_NAME "virtlsyt")
 set(CPACK_PACKAGE_CONTACT "Inmarsat")
 set(CPACK_GENERATOR "DEB")
 set(CPACK_INSTALL_PREFIX "/usr/local")

@@ -21,7 +21,10 @@ DOCKER_RUN_FLAGS := \
   --privileged \
   --net=host \
   -v `pwd`/Virtlyst:/Virtlyst \
+	--env QT_SELECT=qt5 \
   --name=virtlyst_build
+
+#DOCKER_RUN_FLAGS +=  -v `pwd`/cutelyst:/cutelyst
 
 DOCKER_RUN_INFO_FLAGS := \
   --rm -t \
@@ -35,7 +38,7 @@ DOCKER_RUN_INFO_FLAGS := \
 
 ifdef PROXY
 export all_proxy := $(PROXY)
-DOCKER_RUN_FLAGS += --env all_proxy=$(PROXY)
+DOCKER_RUN_INFO_FLAGS += --env all_proxy=$(PROXY)
 endif
 
 GET_SERVICE_VERSIONS := docker run  $(DOCKER_RUN_INFO_FLAGS) \
@@ -56,14 +59,26 @@ versions:
 
 .PHONY: version versions
 
+cutelyst:
+	git clone https://github.com/cutelyst/cutelyst.git
+	cd cutelyst && git checkout tags/$(CUTELYST_VERSION)
+
 virtlyst_build_env:
 	-docker rm -f virtlyst_build
 	docker build -t $@ --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
 	docker run $(DOCKER_RUN_FLAGS) $@ bash
 
 build: virtlyst_build_env
-	docker exec -t -u builder virtlyst_build bash -c "mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && make"
-	docker exec -t -u root virtlyst_build bash -c "cd build && make install && make package"
+	#docker exec -t -u builder virtlyst_build bash -c \
+	#	"mkdir -p /cutelyst/build && cd /cutelyst/build \
+	#	&& cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DPLUGIN_VIEW_GRANTLEE=on \
+	#	&& make && make package"
+	#docker exec -t -u root virtlyst_build bash -c "cd /cutelyst/build && make install"
+	docker exec -t -u builder virtlyst_build bash -c \
+		"mkdir -p build && cd build && \
+		cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && \
+		make && make package"
+	#docker exec -t -u root virtlyst_build bash -c "cd build && make install && make package"
 
 image: build
 	docker build -t $(image) -f Virtlyst/Dockerfile .
@@ -91,6 +106,7 @@ add_info_to_dashboard:
 clean:
 	-docker rm -f $(service) virtlyst_build 2>/dev/null
 	-docker rmi $(image) 2>/dev/null
+	rm -rf Virtlyst/build
 
 distclean: clean
 	-docker rmi virtlyst_build_env 2>/dev/null

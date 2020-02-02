@@ -1,10 +1,5 @@
-
 FROM cmc_build_env as builder
 
-ARG CUTELYST_VERSION=v2.7.0
-ARG VIRTLYST_VERSION=v1.1.0
-
-# Start with a clean image
 FROM debian:stretch
 
 # Install dependencies
@@ -17,10 +12,14 @@ RUN apt-get update \
 # Copy over cutelyst installation
 COPY --from=builder /usr/local /usr/local
 
+# Install cutelyst
+#COPY cutelyst/build/cutelyst-0.1.1-Linux.deb /tmp/
+#RUN apt install /tmp/cutelyst-0.1.1-Linux.deb && rm /tmp/cutelyst-0.1.1-Linux.deb
+
 WORKDIR /usr/local/Virtlyst
 
-COPY Virtlyst/build/virtlsy-0.1.1-Linux.deb /tmp/
-RUN apt install /tmp/virtlsy-0.1.1-Linux.deb && rm /tmp/virtlsy-0.1.1-Linux.deb
+COPY Virtlyst/build/virtlsyt-0.1.1-Linux.deb /tmp/
+RUN apt install /tmp/virtlsyt-0.1.1-Linux.deb && rm /tmp/virtlsyt-0.1.1-Linux.deb
 
 RUN echo "/usr/local/lib/x86_64-linux-gnu" > /etc/ld.so.conf.d/usr-local.conf \
   && echo "/usr/local/Virtlyst" >> /etc/ld.so.conf.d/usr-local.conf \

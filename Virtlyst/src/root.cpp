@@ -76,6 +76,7 @@ void Root::logout(Context *c)
 
 void Root::defaultPage(Context *c)
 {
+  qDebug() << Q_FUNC_INFO;
     c->setStash(QStringLiteral("template"), QStringLiteral("404.html"));
     c->response()->setStatus(404);
 }
@@ -88,8 +89,10 @@ bool Root::Auto(Context *c)
     }
 
     if (!Authentication::userExists(c)) {
-        c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("login"))));
-        return false;
+        if (!Authentication::authenticate(c, "HTTP")) {
+            c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("login"))));
+            return false;
+        }
     }
 
     c->setStash(QStringLiteral("user"), Authentication::user(c));
