@@ -6,7 +6,6 @@ registry   := $(DOCKER_REGISTRY_URL)
 image_name := inmarsat/fc/$(service)
 ver_base   := $(shell cicd version latest-tag --component $(service) --version-only)
 ver_branch ?= $(shell git rev-parse --abbrev-ref HEAD)
-
 image_ver  ?= $(ver_base).0-$(ver_branch)
 image      := $(image_name):$(image_ver)
 user       := $(shell id -u)
