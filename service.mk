@@ -22,7 +22,7 @@ DOCKER_RUN_FLAGS := \
   --net=host \
   -v `pwd`/Virtlyst:/Virtlyst \
 	--env QT_SELECT=qt5 \
-  --name=virtlyst_build
+  --name=virtlyst_build_$(service)
 
 #DOCKER_RUN_FLAGS +=  -v `pwd`/cutelyst:/cutelyst
 
@@ -64,21 +64,21 @@ cutelyst:
 	cd cutelyst && git checkout tags/$(CUTELYST_VERSION)
 
 virtlyst_build_env:
-	-docker rm -f virtlyst_build
+	-docker rm -f virtlyst_build_$(service)
 	docker build -t $@ --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
 	docker run $(DOCKER_RUN_FLAGS) $@ bash
 
 build: virtlyst_build_env
-	#docker exec -t -u builder virtlyst_build bash -c \
+	#docker exec -t -u builder virtlyst_build_$(service) bash -c \
 	#	"mkdir -p /cutelyst/build && cd /cutelyst/build \
 	#	&& cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DPLUGIN_VIEW_GRANTLEE=on \
 	#	&& make && make package"
-	#docker exec -t -u root virtlyst_build bash -c "cd /cutelyst/build && make install"
-	docker exec -t -u builder virtlyst_build bash -c \
+	#docker exec -t -u root virtlyst_build_$(service) bash -c "cd /cutelyst/build && make install"
+	docker exec -t -u builder virtlyst_build_$(service) bash -c \
 		"mkdir -p build && cd build && \
 		cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && \
 		make && make package"
-	#docker exec -t -u root virtlyst_build bash -c "cd build && make install && make package"
+	#docker exec -t -u root virtlyst_build_$(service) bash -c "cd build && make install && make package"
 
 image: build
 	docker build -t $(image) -f Virtlyst/Dockerfile .
@@ -104,7 +104,7 @@ add_info_to_dashboard:
     --job-result '$(job_result)'
 
 clean:
-	-docker rm -f $(service) virtlyst_build 2>/dev/null
+	-docker rm -f $(service) virtlyst_build_$(service) 2>/dev/null
 	-docker rmi $(image) 2>/dev/null
 	rm -rf Virtlyst/build
 
