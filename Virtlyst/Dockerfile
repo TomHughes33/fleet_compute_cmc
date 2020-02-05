@@ -1,4 +1,4 @@
-FROM cmc_build_env as builder
+FROM virtlyst_build_env as builder
 
 FROM debian:stretch
 
