@@ -67,13 +67,9 @@ void Server::index(Context *c)
             createServer(ServerConn::ConnSocket, name, QStringLiteral("localhost"), QLatin1String(""), QString(), QString());
         } else if (params.contains(QStringLiteral("host_edit"))) {
             const QString hostId = params[QStringLiteral("host_id")];
-            const QString hostname = params[QStringLiteral("hostname")];
             const QString name = params[QStringLiteral("name")];
-            const QString login = params[QStringLiteral("login")];
-            const QString password = params[QStringLiteral("password")];
-            const QString cnumber = params[QStringLiteral("cnumber")];
 
-            updateServer(hostId, name, hostname, login, password, cnumber);
+            updateName(hostId, name);
         } else if (params.contains(QStringLiteral("host_sock_edit"))) {
             const QString hostId = params[QStringLiteral("host_id")];
             const QString name = params[QStringLiteral("name")];
@@ -128,6 +124,22 @@ void Server::updateServer(const QString &id, const QString &name, const QString 
     query.bindValue(QStringLiteral(":login"), login);
     query.bindValue(QStringLiteral(":password"), password);
     query.bindValue(QStringLiteral(":cnumber"), cnumber);
+    if (!query.exec()) {
+        qWarning() << "Failed to update connection" << query.lastError().databaseText();
+    }
+}
+
+void Server::updateName(const QString &id, const QString &name)
+{
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("UPDATE servers_compute "
+                               "SET "
+                               "name = :name "
+                               "WHERE id = :id"),
+                QStringLiteral("virtlyst"));
+
+    query.bindValue(QStringLiteral(":id"), id);
+    query.bindValue(QStringLiteral(":name"), name);
     if (!query.exec()) {
         qWarning() << "Failed to update connection" << query.lastError().databaseText();
     }
