@@ -14,8 +14,8 @@ echo "Created new release tag ${new_tag}"
 
 # build and publish #
 echo "Making a cmc release"
-make publish service=${service}
-make add_info_to_dashboard service=${service} job_result=SUCCESS
+make publish
+make add_info_to_dashboard job_result=SUCCESS
 
 # push the tags #
 git push --tags
