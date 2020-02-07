@@ -1,7 +1,7 @@
 FROM debian:stretch as builder
 
 #ARG CUTELYST_VERSION=v2.4.1
-ARG CUTELYST_VERSION=v2.7.0
+ARG CUTELYST_VERSION=v2.9.0
 ARG VIRTLYST_VERSION=v1.1.0
 ARG uid
 ENV UID=$uid
@@ -16,7 +16,8 @@ RUN apt-get update \
 RUN git clone https://github.com/cutelyst/cutelyst.git \
  && cd cutelyst \
  && git checkout tags/$CUTELYST_VERSION \
- && mkdir build && cd build \
+ && sed -i 's/int endOffset/qint64 endOffset/g' Cutelyst/multipartformdataparser.cpp \
+ &&  mkdir build && cd build \
  && export QT_SELECT=qt5 \
  && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DPLUGIN_VIEW_GRANTLEE=on \
  && make && make install
