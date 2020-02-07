@@ -222,11 +222,12 @@ Connection *Virtlyst::connection(const QString &id, QObject *parent)
             port = 22;
         }
         if(server->type == ServerConn::ConnSSH) {
-	    if(checkSSHconnection(host, port)){
-                server->conn = server->isonline()
-                  ? new Connection(server->url, server->name, server)
-                  : nullptr;
-	    }
+	    // if(checkSSHconnection(host, port)){
+        //         server->conn = server->isonline()
+        //           ? new Connection(server->url, server->name, server)
+        //           : nullptr;
+	    // }
+        qDebug() << "Removed connection " << host << ":"<< port;
 	} else {
             server->conn = server->isonline()
               ? new Connection(server->url, server->name, server)
@@ -315,23 +316,24 @@ void Virtlyst::updateConnections()
         qDebug() << "password: " << password;
         qDebug() << "cnumber: " << cnumber;
 
-        ServerConn *server = m_connections.value(id);
-        if (server) {
-            if (server->name == name &&
-                    server->hostname == hostname &&
-                    server->login == login &&
-                    server->password == password &&
-                    server->type == type &&
-                    server->cnumber == cnumber) {
-                continue;
-            } else {
-                delete server->conn;
-            }
-        } else {
-            server = new ServerConn(this);
-            server->id = id;
-        }
-
+        // ServerConn *server = m_connections.value(id);
+        // if (server) {
+        //     if (server->name == name &&
+        //             server->hostname == hostname &&
+        //             server->login == login &&
+        //             server->password == password &&
+        //             server->type == type &&
+        //             server->cnumber == cnumber) {
+        //         continue;
+        //     } else {
+        //         delete server->conn;
+        //     }
+        // } else {
+            
+        // }
+        ServerConn *server;
+        server = new ServerConn(this);
+        server->id = id;
         server->name = name;
         server->hostname = hostname;
         server->login = login;
@@ -340,69 +342,70 @@ void Virtlyst::updateConnections()
         server->cnumber = cnumber;
 
         QUrl url;
-	QString host;
-	QString sshcmd;
-	int port;
-        switch (type) {
-        case ServerConn::ConnSocket:
-            url = QStringLiteral("qemu:///system");
-            break;
-        case ServerConn::ConnSSH:
-            //url = QStringLiteral("qemu+ssh:///system");
-            url = QStringLiteral("qemu+ssh:///system?no_verify=1&keyfile=/root/.ssh/id_rsa_hosting");
-            if (hostname.contains(':')) {
-                QRegExp separator(":");
-                QStringList list = hostname.split(separator);
-                url.setHost(list.at(0));
-                url.setPort(list.at(1).toInt());
-		host = list.at(0);
-		port = list.at(1).toInt();
-            } else {
-              url.setHost(hostname);
-	      host = hostname;
-            }
-            url.setUserName(login);
+	    QString host;
+	    QString sshcmd;
+	    int port;
+        // switch (type) {
+        // case ServerConn::ConnSocket:
+        //     url = QStringLiteral("qemu:///system");
+        //     break;
+        // case ServerConn::ConnSSH:
+        //     //url = QStringLiteral("qemu+ssh:///system");
+        //     url = QStringLiteral("qemu+ssh:///system?no_verify=1&keyfile=/root/.ssh/id_rsa_hosting");
+        //     if (hostname.contains(':')) {
+        //         QRegExp separator(":");
+        //         QStringList list = hostname.split(separator);
+        //         url.setHost(list.at(0));
+        //         url.setPort(list.at(1).toInt());
+		//         host = list.at(0);
+		//         port = list.at(1).toInt();
+        //     } else {
+        //       url.setHost(hostname);
+	    //   host = hostname;
+        //     }
+        //     url.setUserName(login);
 
-	    //Execute command to avoid known host issue for new corp IP
-            //qDebug() << "Before known host cmd ";
-            sshcmd = "ssh-keygen -f /root/.ssh/known_hosts -R [" + host + "]:50022";
-            QProcess::execute (sshcmd);
-            //qDebug() << "After known host cmd ";
-            break;
-        case ServerConn::ConnTCP:
-            url = QStringLiteral("qemu+tcp:///system");
-            url.setHost(hostname);
-            url.setUserName(login);
-            url.setPassword(password);
-            break;
-        case ServerConn::ConnTLS:
-            url = QStringLiteral("qemu+tls:///system");
-            url.setHost(hostname);
-            url.setUserName(login);
-            url.setPassword(password);
-            break;
-        }
+	    // //Execute command to avoid known host issue for new corp IP
+        //     //qDebug() << "Before known host cmd ";
+        //     sshcmd = "ssh-keygen -f /root/.ssh/known_hosts -R [" + host + "]:50022";
+        //     QProcess::execute (sshcmd);
+        //     //qDebug() << "After known host cmd ";
+        //     break;
+        // case ServerConn::ConnTCP:
+        //     url = QStringLiteral("qemu+tcp:///system");
+        //     url.setHost(hostname);
+        //     url.setUserName(login);
+        //     url.setPassword(password);
+        //     break;
+        // case ServerConn::ConnTLS:
+        //     url = QStringLiteral("qemu+tls:///system");
+        //     url.setHost(hostname);
+        //     url.setUserName(login);
+        //     url.setPassword(password);
+        //     break;
+        // }
+        url = QStringLiteral("qemu+ssh:///system?no_verify=1&keyfile=/root/.ssh/id_rsa_hosting");
         server->url = url;
 
-        switch (type) {
-        case ServerConn::ConnSocket:
-          server->conn = new Connection(url, name, server);
-          break;
-        case ServerConn::ConnSSH:
-	  if(checkSSHconnection(host, port)){
-            server->conn = server->isonline() ?
+    //     switch (type) {
+    //     case ServerConn::ConnSocket:
+    //       server->conn = new Connection(url, name, server);
+    //       break;
+    //     case ServerConn::ConnSSH:
+	//   if(checkSSHconnection(host, port)){
+            
+	//   }
+    //       break;
+    //     case ServerConn::ConnTCP:
+    //     case ServerConn::ConnTLS:
+    //       server->conn = server->isonline() ?
+    //         new Connection(url, name, server)
+    //         : nullptr;
+    //       break;
+    //     }
+        server->conn = server->isonline() ?
               new Connection(url, name, server)
               : nullptr;
-	  }
-          break;
-        case ServerConn::ConnTCP:
-        case ServerConn::ConnTLS:
-          server->conn = server->isonline() ?
-            new Connection(url, name, server)
-            : nullptr;
-          break;
-        }
-
         m_connections.insert(id, server);
     }
 
@@ -513,7 +516,7 @@ bool Virtlyst::createDB()
 bool ServerConn::isonline()
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
-        QStringLiteral("SELECT isonline FROM servers_compute where name=:name"),
+        QStringLiteral("SELECT name FROM servers_compute WHERE last_identity_update > CURRENT_TIMESTAMP - INTERVAL '5 min' AND name=:name;"),
         QStringLiteral("virtlyst"));
 
     query.bindValue(QStringLiteral(":name"), name);
@@ -521,12 +524,10 @@ bool ServerConn::isonline()
     if (!query.exec()) {
         qWarning() << "Failed to get online status" << query.lastError().databaseText();
     }
-    query.next();
-    // qDebug() << "query.value(0).toInt()" << name << ":" << query.value(0).toInt() ;
-    if (query.value(0).toInt() == 1)
+    if( query.next() ){
         return true;
-    else
-        return false;
+    }
+    return false;
 }
 
 
@@ -561,17 +562,18 @@ ServerConn *ServerConn::clone(QObject *parent)
         host = hostname;
         port = 22;
     }
-    if (ret->isonline() && conn && !conn->isAlive()) {
-        delete conn;
-        if(type == ServerConn::ConnSSH) {
-            if(checkSSHconnection(host, port)){
-                conn = new Connection(url, name, this);
-            }
-        } else {
-            conn = new Connection(url, name, this);
-        }
-    }
-    ret->conn = conn ? conn->clone(ret) : nullptr;
+    // if (ret->isonline() && conn && !conn->isAlive()) {
+    //     delete conn;
+    //     if(type == ServerConn::ConnSSH) {
+    //         if(checkSSHconnection(host, port)){
+    //             conn = new Connection(url, name, this);
+    //         }
+    //     } else {
+    //         conn = new Connection(url, name, this);
+    //     }
+    // }
+
+    ret->conn = ret->isonline() ? conn->clone(ret) : nullptr;
 
     return ret;
 }

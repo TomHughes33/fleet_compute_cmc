@@ -94,22 +94,24 @@ Connection::Connection(const QUrl &url, const QString &name, QObject *parent) : 
 {
     setName(name);
 
-    const QString uri = url.toString(QUrl::RemovePassword);
-    qCDebug(VIRT_CONN) << "Connecting to" << uri;
-    QUrl localUrl(url);
-    virConnectAuth auth;
-    auth.credtype = authCreds;
-    auth.ncredtype = sizeof(authCreds)/sizeof(int);
-    auth.cb = authCb;
-    auth.cbdata = &localUrl;
+     const QString uri = url.toString(QUrl::RemovePassword);
+    // qCDebug(VIRT_CONN) << "Connecting to" << uri;
+    // QUrl localUrl(url);
+     virConnectAuth auth;
+    // auth.credtype = authCreds;
+    // auth.ncredtype = sizeof(authCreds)/sizeof(int);
+    // auth.cb = authCb;
+    // auth.cbdata = &localUrl;
 
-    m_conn = virConnectOpenAuth(uri.toUtf8().constData(), &auth, 0);
-    if (m_conn == NULL) {
-        qCWarning(VIRT_CONN) << "Failed to open connection to" << url;
-        return;
-    }
+    m_conn = nullptr;
+    //m_conn = virConnectOpenAuth(uri.toUtf8().constData(), &auth, 0);
+    // if (m_conn == NULL) {
+    //     qCWarning(VIRT_CONN) << "Failed to open connection to" << url;
+    //     return;
+    // }
 
-    qCDebug(VIRT_CONN) << "Connected to" << uri;
+
+    //qCDebug(VIRT_CONN) << "Connected to" << uri;
 }
 
 Connection::~Connection()
@@ -201,12 +203,12 @@ uint Connection::cpus()
 bool Connection::isAlive()
 {
 
-    if (m_conn) {
-        // This is will still return true when the connection
-        // closed but no request has been made
-        return virConnectIsAlive(m_conn) == 1;
-    }
-    return false;
+    // if (m_conn) {
+    //     // This is will still return true when the connection
+    //     // closed but no request has been made
+    //     return virConnectIsAlive(m_conn) == 1;
+    // }
+    return true;
 }
 
 int Connection::maxVcpus() const
