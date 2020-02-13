@@ -516,7 +516,7 @@ bool Virtlyst::createDB()
 bool ServerConn::isonline()
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
-        QStringLiteral("SELECT name FROM servers_compute WHERE last_identity_update > CURRENT_TIMESTAMP - INTERVAL '5 min' AND name=:name;"),
+        QStringLiteral("SELECT name FROM servers_compute WHERE last_identity_update > CURRENT_TIMESTAMP - INTERVAL '7 min' AND name=:name;"),
         QStringLiteral("virtlyst"));
 
     query.bindValue(QStringLiteral(":name"), name);
