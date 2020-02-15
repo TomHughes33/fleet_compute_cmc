@@ -12,7 +12,7 @@ image      := $(image_name):$(image_ver)
 user       := $(shell id -u)
 PROXY      ?=
 
-CUTELYST_VERSION := v2.7.0
+CUTELYST_VERSION := v2.9.0
 
 DOCKER_RUN_FLAGS := \
   -d \
@@ -22,7 +22,7 @@ DOCKER_RUN_FLAGS := \
   --net=host \
   -v `pwd`/Virtlyst:/Virtlyst \
 	--env QT_SELECT=qt5 \
-  --name=virtlyst_build_$(service)
+  --name=$(service)_build
 
 #DOCKER_RUN_FLAGS +=  -v `pwd`/cutelyst:/cutelyst
 
@@ -63,22 +63,22 @@ cutelyst:
 	git clone https://github.com/cutelyst/cutelyst.git
 	cd cutelyst && git checkout tags/$(CUTELYST_VERSION)
 
-virtlyst_build_env:
-	-docker rm -f virtlyst_build_$(service)
+$(service)_build_env:
+	-docker rm -f $(service)_build
 	docker build -t $@ --build-arg uid=$(user) -f Virtlyst/Dockerfile.build .
-	docker run $(DOCKER_RUN_FLAGS) $@ bash
+	docker run $(DOCKER_RUN_FLAGS) $@ ash -l
 
-build: virtlyst_build_env
-	#docker exec -t -u builder virtlyst_build_$(service) bash -c \
+build: $(service)_build_env
+	#docker exec -t -u builder $(service)_build ash -c \
 	#	"mkdir -p /cutelyst/build && cd /cutelyst/build \
 	#	&& cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DPLUGIN_VIEW_GRANTLEE=on \
 	#	&& make && make package"
-	#docker exec -t -u root virtlyst_build_$(service) bash -c "cd /cutelyst/build && make install"
-	docker exec -t -u builder virtlyst_build_$(service) bash -c \
+	#docker exec -t -u root $(service)_build ash -c "cd /cutelyst/build && make install"
+	docker exec -t -u builder $(service)_build ash -c \
 		"mkdir -p build && cd build && \
 		cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && \
-		make && make package"
-	#docker exec -t -u root virtlyst_build_$(service) bash -c "cd build && make install && make package"
+		make"
+	#docker exec -t -u root $(service)_build ash -c "cd build && make install && make package"
 
 image: build
 	docker build -t $(image) -f Virtlyst/Dockerfile .
@@ -104,11 +104,11 @@ add_info_to_dashboard:
     --job-result '$(job_result)'
 
 clean:
-	-docker rm -f $(service) virtlyst_build_$(service) 2>/dev/null
+	-docker rm -f $(service) $(service)_build 2>/dev/null
 	-docker rmi $(image) 2>/dev/null
 	rm -rf Virtlyst/build
 
 distclean: clean
-	-docker rmi virtlyst_build_env 2>/dev/null
+	-docker rmi $(service)_build_env 2>/dev/null
 
 .PHONY: image publish add_info_to_dashboard distclean clean

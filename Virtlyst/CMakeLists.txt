@@ -18,26 +18,12 @@ find_package(Cutelyst2Qt5 2.7.0 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(Grantlee5 REQUIRED)
 pkg_check_modules(LIBVIRT REQUIRED libvirt)
+pkg_check_modules(LIBSSH REQUIRED libssh)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lssh")
-
-
-find_library(SSH_LIB
-    NAMES
-      ssh
-      libssh
-    PATHS
-      /usr/lib
-      /usr/local/lib
-      /opt/local/lib
-      /sw/lib
-      ${CMAKE_LIBRARY_PATH}
-      ${CMAKE_INSTALL_PREFIX}/lib
-  )
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 #include_directories(
 #    ${CMAKE_SOURCE_DIR}
@@ -53,9 +39,9 @@ install(DIRECTORY DESTINATION Virtlyst/data)
 install(DIRECTORY root/ DESTINATION Virtlyst/root/)
 install(FILES virtlyst DESTINATION /etc/init.d/)
 
-set(CPACK_PACKAGE_NAME "virtlsyt")
-set(CPACK_PACKAGE_CONTACT "Inmarsat")
-set(CPACK_GENERATOR "DEB")
-set(CPACK_INSTALL_PREFIX "/usr/local")
-set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
-include(CPack)
+# set(CPACK_PACKAGE_NAME "virtlsyt")
+# set(CPACK_PACKAGE_CONTACT "Inmarsat")
+# set(CPACK_GENERATOR "")
+# set(CPACK_INSTALL_PREFIX "/usr/local")
+# set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
+# include(CPack)

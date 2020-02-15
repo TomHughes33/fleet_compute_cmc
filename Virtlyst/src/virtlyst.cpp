@@ -24,7 +24,6 @@
 #include <Cutelyst/Plugins/Authentication/credentialhttp.h>
 #include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
 #include <grantlee/engine.h>
-#include <postgresql/libpq-fe.h>
 
 #include <QFile>
 #include <QMutexLocker>

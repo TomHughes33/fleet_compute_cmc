@@ -22,6 +22,7 @@ target_link_libraries(Virtlyst
     Qt5::Sql
     Qt5::Xml
     ${LIBVIRT_LIBRARIES}
+    ${LIBSSH_LIBRARIES}
 )
 
 install(TARGETS Virtlyst DESTINATION Virtlyst )
