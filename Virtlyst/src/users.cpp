@@ -41,6 +41,7 @@ void Users::index(Context *c)
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("SELECT id, username "
                                "FROM users "
+                               "WHERE id > 1"
                                "ORDER BY username"),
                 QStringLiteral("virtlyst"));
     if (query.exec()) {
