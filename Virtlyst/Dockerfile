@@ -1,4 +1,4 @@
-FROM virtlyst_build_env as builder
+FROM cmc_build_env as builder
 
 FROM alpine:3.11.3
 
