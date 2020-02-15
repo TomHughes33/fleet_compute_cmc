@@ -12,6 +12,8 @@ RUN apk update && apk add \
   openssh-client \
   libvirt-libs
 
+RUN apk add qt5-qtbase-postgresql
+
 # Copy over cutelyst installation
 COPY --from=builder /usr/local /usr/local
 
